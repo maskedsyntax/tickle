@@ -185,14 +185,19 @@ class _TodayHero extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  '${stats.totalTapsToday}',
-                  style: const TextStyle(
-                    fontSize: 56,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                    letterSpacing: -2,
-                    height: 1.0,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '${stats.totalTapsToday}',
+                    maxLines: 1,
+                    style: const TextStyle(
+                      fontSize: 56,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: -2,
+                      height: 1.0,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -381,12 +386,17 @@ class _StatTile extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.8,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              value,
+              maxLines: 1,
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.8,
+              ),
             ),
           ),
           if (subtitle != null) ...[

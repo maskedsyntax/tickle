@@ -169,7 +169,16 @@ class _HeroCountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BounceTap(
+    final goalSuffix = hasGoal
+        ? ', goal ${counter.currentCount} of ${counter.goalValue}'
+        : '';
+    return Semantics(
+      button: true,
+      label:
+          '${counter.title}, count ${counter.currentCount}$goalSuffix',
+      hint: 'Double tap to increment',
+      excludeSemantics: true,
+      child: BounceTap(
       scaleFactor: 0.97,
       onTap: () {
         HapticsHelper.trigger(hapticLevel);
@@ -203,21 +212,25 @@ class _HeroCountCard extends StatelessWidget {
               progress: hasGoal ? progress : null,
             ),
             const SizedBox(height: 24),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 220),
-              transitionBuilder: (child, anim) => FadeTransition(
-                opacity: anim,
-                child: ScaleTransition(scale: anim, child: child),
-              ),
-              child: Text(
-                '${counter.currentCount}',
-                key: ValueKey(counter.currentCount),
-                style: const TextStyle(
-                  fontSize: 88,
-                  height: 1.0,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  letterSpacing: -3,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                transitionBuilder: (child, anim) => FadeTransition(
+                  opacity: anim,
+                  child: ScaleTransition(scale: anim, child: child),
+                ),
+                child: Text(
+                  '${counter.currentCount}',
+                  key: ValueKey(counter.currentCount),
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 88,
+                    height: 1.0,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: -3,
+                  ),
                 ),
               ),
             ),
@@ -241,6 +254,7 @@ class _HeroCountCard extends StatelessWidget {
             ],
           ],
         ),
+      ),
       ),
     );
   }

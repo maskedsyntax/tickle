@@ -1,12 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:tickle_core/tickle_core.dart';
 import '../cubits/settings_cubit.dart';
 import '../cubits/counters_cubit.dart';
-import '../theme/theme.dart';
-import '../widgets/bounce_tap.dart';
 import '../utils/haptic_feedback.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -218,9 +220,9 @@ class SettingsScreen extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-            leading: const Icon(Icons.copy_all_rounded, color: Colors.blue),
-            title: const Text('Export Backup to Clipboard'),
-            subtitle: const Text('Copies a full JSON backup of all counters & logs'),
+            leading: const Icon(Icons.ios_share_rounded, color: Colors.blue),
+            title: const Text('Export Data'),
+            subtitle: const Text('Share a JSON backup of all counters & logs'),
             onTap: () async {
               HapticsHelper.selectionClick(context.read<SettingsCubit>().state.hapticLevel);
               await _exportBackup(context, repo);
@@ -228,9 +230,9 @@ class SettingsScreen extends StatelessWidget {
           ),
           _buildDivider(context),
           ListTile(
-            leading: const Icon(Icons.download_rounded, color: Colors.green),
-            title: const Text('Import Backup from Clipboard'),
-            subtitle: const Text('Restore all counters and logs from clipboard JSON'),
+            leading: const Icon(Icons.file_open_rounded, color: Colors.green),
+            title: const Text('Import Data'),
+            subtitle: const Text('Restore counters and logs from a backup file'),
             onTap: () async {
               HapticsHelper.selectionClick(context.read<SettingsCubit>().state.hapticLevel);
               await _importBackup(context, repo, countersCubit);
@@ -271,16 +273,20 @@ class SettingsScreen extends StatelessWidget {
       };
 
       final jsonString = const JsonEncoder.withIndent('  ').convert(backupData);
-      await Clipboard.setData(ClipboardData(text: jsonString));
+      final dir = await getTemporaryDirectory();
+      final timestamp = DateFormat('yyyy-MM-dd-HHmm').format(DateTime.now());
+      final file = File('${dir.path}/tickle-backup-$timestamp.json');
+      await file.writeAsString(jsonString);
 
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Backup JSON copied to clipboard! Share it to save your data.'),
-            backgroundColor: Colors.green.shade700,
-          ),
-        );
-      }
+      if (!context.mounted) return;
+
+      final box = context.findRenderObject() as RenderBox?;
+      await Share.shareXFiles(
+        [XFile(file.path, mimeType: 'application/json')],
+        subject: 'Tickle backup',
+        sharePositionOrigin:
+            box != null ? box.localToGlobal(Offset.zero) & box.size : null,
+      );
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -299,83 +305,95 @@ class SettingsScreen extends StatelessWidget {
     CountersCubit countersCubit,
   ) async {
     try {
-      final clipData = await Clipboard.getData(Clipboard.kTextPlain);
-      if (clipData == null || clipData.text == null || clipData.text!.trim().isEmpty) {
-        throw Exception('Clipboard is empty. Copy backup JSON first.');
+      final pick = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        withData: true,
+      );
+      if (pick == null || pick.files.isEmpty) return;
+      final picked = pick.files.first;
+
+      final String contents;
+      if (picked.bytes != null) {
+        contents = utf8.decode(picked.bytes!);
+      } else if (picked.path != null) {
+        contents = await File(picked.path!).readAsString();
+      } else {
+        throw Exception('Could not read the selected file.');
       }
 
-      final dynamic data = json.decode(clipData.text!);
+      final dynamic data = json.decode(contents);
       if (data is! Map || data['counters'] == null || data['logs'] == null) {
-        throw Exception('Invalid backup format. Make sure you copied a Tickle backup JSON.');
+        throw Exception('Invalid backup format. Pick a Tickle backup JSON file.');
       }
 
-      // Show confirmation
-      if (context.mounted) {
-        final confirm = await showDialog<bool>(
-          context: context,
-          builder: (diagContext) => AlertDialog.adaptive(
-            title: const Text('Import Backup?'),
-            content: const Text(
-              'Importing this backup will overwrite existing database records. Do you wish to proceed?',
+      final counterCount = (data['counters'] as List).length;
+      final logCount = (data['logs'] as List).length;
+
+      if (!context.mounted) return;
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (diagContext) => AlertDialog.adaptive(
+          title: const Text('Import Backup?'),
+          content: Text(
+            'This will import $counterCount counter${counterCount == 1 ? "" : "s"} and $logCount log entr${logCount == 1 ? "y" : "ies"}, '
+            'overwriting any with matching IDs. Continue?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(diagContext, false),
+              child: const Text('Cancel'),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(diagContext, false),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(diagContext, true),
-                child: const Text('Import', style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            ],
+            TextButton(
+              onPressed: () => Navigator.pop(diagContext, true),
+              child: const Text('Import',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      );
+
+      if (confirm != true) return;
+
+      final List<dynamic> jsonCounters = data['counters'];
+      final List<dynamic> jsonLogs = data['logs'];
+
+      for (final item in jsonCounters) {
+        final c = Counter(
+          id: item['id'],
+          title: item['title'],
+          emoji: item['emoji'],
+          colorHex: item['colorHex'],
+          currentCount: item['currentCount'],
+          goalValue: item['goalValue'],
+          isArchived: item['isArchived'] ?? false,
+          createdAt: DateTime.parse(item['createdAt']),
+          sortOrder: item['sortOrder'] ?? 0,
+        );
+        await repo.saveCounter(c);
+      }
+
+      for (final item in jsonLogs) {
+        final l = CounterLog(
+          id: item['id'],
+          counterId: item['counterId'],
+          timestamp: DateTime.parse(item['timestamp']),
+          actionType: CounterActionType.fromJson(item['actionType']),
+          delta: item['delta'],
+          resultingCount: item['resultingCount'],
+        );
+        await repo.addLog(l);
+      }
+
+      countersCubit.loadCounters();
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Backup successfully imported!'),
+            backgroundColor: Colors.green,
           ),
         );
-
-        if (confirm != true) return;
-
-        // Perform Import
-        final List<dynamic> jsonCounters = data['counters'];
-        final List<dynamic> jsonLogs = data['logs'];
-
-        // Write to repo
-        for (final item in jsonCounters) {
-          final c = Counter(
-            id: item['id'],
-            title: item['title'],
-            emoji: item['emoji'],
-            colorHex: item['colorHex'],
-            currentCount: item['currentCount'],
-            goalValue: item['goalValue'],
-            isArchived: item['isArchived'] ?? false,
-            createdAt: DateTime.parse(item['createdAt']),
-            sortOrder: item['sortOrder'] ?? 0,
-          );
-          await repo.saveCounter(c);
-        }
-
-        for (final item in jsonLogs) {
-          final l = CounterLog(
-            id: item['id'],
-            counterId: item['counterId'],
-            timestamp: DateTime.parse(item['timestamp']),
-            actionType: CounterActionType.fromJson(item['actionType']),
-            delta: item['delta'],
-            resultingCount: item['resultingCount'],
-          );
-          await repo.addLog(l);
-        }
-
-        // Reload UI cubit
-        countersCubit.loadCounters();
-
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Backup successfully imported!'),
-              backgroundColor: Colors.green.shade700,
-            ),
-          );
-        }
       }
     } catch (e) {
       if (context.mounted) {

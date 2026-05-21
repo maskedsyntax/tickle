@@ -322,17 +322,26 @@ class _HomeScreenState extends State<HomeScreen> {
       return cardBody;
     }
 
-    return BounceTap(
-      onTap: () {
-        HapticsHelper.trigger(hapticLevel);
-        // Direct tap on card increments the count
-        context.read<CountersCubit>().incrementCounter(counter.id);
-      },
-      onLongPress: () {
-        HapticsHelper.selectionClick(hapticLevel);
-        _showContextMenu(context, counter, hapticLevel);
-      },
-      child: cardBody,
+    final goalSuffix = counter.goalValue != null
+        ? ', goal ${counter.currentCount} of ${counter.goalValue}'
+        : '';
+    return Semantics(
+      button: true,
+      label: '${counter.title}, count ${counter.currentCount}$goalSuffix',
+      hint: 'Double tap to increment, long press for options',
+      excludeSemantics: true,
+      child: BounceTap(
+        onTap: () {
+          HapticsHelper.trigger(hapticLevel);
+          // Direct tap on card increments the count
+          context.read<CountersCubit>().incrementCounter(counter.id);
+        },
+        onLongPress: () {
+          HapticsHelper.selectionClick(hapticLevel);
+          _showContextMenu(context, counter, hapticLevel);
+        },
+        child: cardBody,
+      ),
     );
   }
 
