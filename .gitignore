@@ -3,6 +3,14 @@
 *.lock
 *.log
 *.pyc
+
+# AI tooling local state
+.antigravitycli/
+.claude/
+
+# IDE
+.idea/
+*.iml
 *.swp
 .buildlog/
 .history

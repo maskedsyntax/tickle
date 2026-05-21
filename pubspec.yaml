@@ -1,0 +1,8 @@
+name: tickle_workspace
+environment:
+  sdk: ^3.11.1
+
+workspace:
+  - apps/tickle_mobile
+  - packages/tickle_core
+  - packages/tickle_data
