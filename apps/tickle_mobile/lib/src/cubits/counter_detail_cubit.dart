@@ -91,19 +91,22 @@ class CounterDetailCubit extends Cubit<CounterDetailState> {
   Future<void> increment() async {
     if (_currentCounter == null) return;
     try {
+      // Capture timestamp & id at action time so log ordering survives
+      // rapid taps (DB stores datetime at second precision; UUID v7 sorts
+      // chronologically as a tiebreaker).
+      final timestamp = DateTime.now();
+      final logId = const Uuid().v7();
       final newCount = _currentCounter!.currentCount + 1;
       final updatedCounter = _currentCounter!.copyWith(currentCount: newCount);
-      
-      // Optimistic update
+
       _currentCounter = updatedCounter;
       _emitLoaded();
 
-      // Write to repository
       await _repository.saveCounter(updatedCounter);
       await _repository.addLog(CounterLog(
-        id: const Uuid().v4(),
+        id: logId,
         counterId: _counterId,
-        timestamp: DateTime.now(),
+        timestamp: timestamp,
         actionType: CounterActionType.increment,
         delta: 1,
         resultingCount: newCount,
@@ -117,19 +120,19 @@ class CounterDetailCubit extends Cubit<CounterDetailState> {
   Future<void> decrement() async {
     if (_currentCounter == null) return;
     try {
+      final timestamp = DateTime.now();
+      final logId = const Uuid().v7();
       final newCount = _currentCounter!.currentCount - 1;
       final updatedCounter = _currentCounter!.copyWith(currentCount: newCount);
 
-      // Optimistic update
       _currentCounter = updatedCounter;
       _emitLoaded();
 
-      // Write to repository
       await _repository.saveCounter(updatedCounter);
       await _repository.addLog(CounterLog(
-        id: const Uuid().v4(),
+        id: logId,
         counterId: _counterId,
-        timestamp: DateTime.now(),
+        timestamp: timestamp,
         actionType: CounterActionType.decrement,
         delta: -1,
         resultingCount: newCount,
@@ -145,18 +148,18 @@ class CounterDetailCubit extends Cubit<CounterDetailState> {
     try {
       final originalCount = _currentCounter!.currentCount;
       if (originalCount == 0) return;
+      final timestamp = DateTime.now();
+      final logId = const Uuid().v7();
       final updatedCounter = _currentCounter!.copyWith(currentCount: 0);
 
-      // Optimistic update
       _currentCounter = updatedCounter;
       _emitLoaded();
 
-      // Write to repository
       await _repository.saveCounter(updatedCounter);
       await _repository.addLog(CounterLog(
-        id: const Uuid().v4(),
+        id: logId,
         counterId: _counterId,
-        timestamp: DateTime.now(),
+        timestamp: timestamp,
         actionType: CounterActionType.reset,
         delta: -originalCount,
         resultingCount: 0,

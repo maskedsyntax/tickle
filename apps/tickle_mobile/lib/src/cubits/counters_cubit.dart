@@ -275,6 +275,12 @@ class CountersCubit extends Cubit<CountersState> {
       final newCount = updateFn(oldCount);
       final updatedCounter = counter.copyWith(currentCount: newCount);
 
+      // Capture at action time so rapid taps preserve order — DB stores
+      // datetime at second precision and UUID v7 sorts chronologically
+      // as a tiebreaker.
+      final timestamp = DateTime.now();
+      final logId = const Uuid().v7();
+
       // Optimistic update if it's in active counters
       final activeIndex = _activeCounters.indexWhere((c) => c.id == id);
       if (activeIndex != -1) {
@@ -284,9 +290,9 @@ class CountersCubit extends Cubit<CountersState> {
 
       await _repository.saveCounter(updatedCounter);
       await _repository.addLog(CounterLog(
-        id: const Uuid().v4(),
+        id: logId,
         counterId: id,
-        timestamp: DateTime.now(),
+        timestamp: timestamp,
         actionType: actionType,
         delta: newCount - oldCount,
         resultingCount: newCount,

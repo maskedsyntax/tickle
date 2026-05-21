@@ -31,7 +31,6 @@ class CounterDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final settingsCubit = context.read<SettingsCubit>();
 
     return BlocBuilder<CounterDetailCubit, CounterDetailState>(
@@ -53,9 +52,11 @@ class CounterDetailView extends StatelessWidget {
           final counter = state.counter;
           final logs = state.logs;
           final preset = AppColors.getPresetByHex(counter.colorHex);
-          final progress = counter.goalValue != null && counter.goalValue! > 0
+          final hasGoal = counter.goalValue != null && counter.goalValue! > 0;
+          final progress = hasGoal
               ? (counter.currentCount / counter.goalValue!).clamp(0.0, 1.0)
               : 0.0;
+          final hapticLevel = settingsCubit.state.hapticLevel;
 
           return Scaffold(
             appBar: AppBar(
@@ -64,10 +65,10 @@ class CounterDetailView extends StatelessWidget {
                 PopupMenuButton<String>(
                   onSelected: (val) {
                     if (val == 'reset') {
-                      HapticsHelper.selectionClick(settingsCubit.state.hapticLevel);
+                      HapticsHelper.selectionClick(hapticLevel);
                       context.read<CounterDetailCubit>().reset();
                     } else if (val == 'clear_history') {
-                      HapticsHelper.selectionClick(settingsCubit.state.hapticLevel);
+                      HapticsHelper.selectionClick(hapticLevel);
                       _confirmClearHistory(context);
                     }
                   },
@@ -78,7 +79,8 @@ class CounterDetailView extends StatelessWidget {
                     ),
                     const PopupMenuItem(
                       value: 'clear_history',
-                      child: Text('Clear History Logs', style: TextStyle(color: Colors.red)),
+                      child: Text('Clear History Logs',
+                          style: TextStyle(color: Colors.red)),
                     ),
                   ],
                 ),
@@ -86,24 +88,23 @@ class CounterDetailView extends StatelessWidget {
             ),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header card with emoji & giant count
-                  _buildHeaderCard(context, counter, preset, progress, settingsCubit.state.hapticLevel),
-                  const SizedBox(height: 24),
-                  
-                  // Incrementor / Decrementor controls
-                  _buildControls(context, preset, settingsCubit.state.hapticLevel),
-                  const SizedBox(height: 32),
-
-                  // Analytics Chart (Last 7 Days)
-                  _buildAnalyticsSection(context, logs, preset),
-                  const SizedBox(height: 32),
-
-                  // History Log Section
-                  _buildHistorySection(context, logs),
+                  _HeroCountCard(
+                    counter: counter,
+                    preset: preset,
+                    hasGoal: hasGoal,
+                    progress: progress,
+                    hapticLevel: hapticLevel,
+                  ),
+                  const SizedBox(height: 20),
+                  _Controls(preset: preset, hapticLevel: hapticLevel),
+                  const SizedBox(height: 28),
+                  _AnalyticsSection(logs: logs, preset: preset),
+                  const SizedBox(height: 28),
+                  _HistorySection(logs: logs),
                 ],
               ),
             ),
@@ -113,403 +114,6 @@ class CounterDetailView extends StatelessWidget {
         return const Scaffold();
       },
     );
-  }
-
-  Widget _buildHeaderCard(
-    BuildContext context,
-    Counter counter,
-    CounterColorPreset preset,
-    double progress,
-    String hapticLevel,
-  ) {
-    return BounceTap(
-      onTap: () {
-        HapticsHelper.trigger(hapticLevel);
-        context.read<CounterDetailCubit>().increment();
-      },
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Theme.of(context).dividerColor, width: 1),
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: preset.primary.withOpacity(0.12),
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                counter.emoji ?? '🔢',
-                style: const TextStyle(fontSize: 36),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              '${counter.currentCount}',
-              style: TextStyle(
-                fontSize: 72,
-                fontWeight: FontWeight.bold,
-                color: preset.primary,
-                letterSpacing: -2,
-              ),
-            ),
-            if (counter.goalValue != null) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                  color: preset.primary.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  'Goal progress: ${(progress * 100).round()}% (${counter.currentCount}/${counter.goalValue})',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: preset.secondary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Progress Bar
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  minHeight: 8,
-                  color: preset.primary,
-                  backgroundColor: preset.primary.withOpacity(0.15),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildControls(BuildContext context, CounterColorPreset preset, String hapticLevel) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Decrement
-          Expanded(
-            child: BounceTap(
-              onTap: () {
-                HapticsHelper.trigger(hapticLevel);
-                context.read<CounterDetailCubit>().decrement();
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Theme.of(context).dividerColor),
-                ),
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.remove_rounded, color: preset.primary, size: 24),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Decrease',
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          // Increment
-          Expanded(
-            flex: 2,
-            child: BounceTap(
-              onTap: () {
-                HapticsHelper.trigger(hapticLevel);
-                context.read<CounterDetailCubit>().increment();
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                decoration: BoxDecoration(
-                  color: preset.primary,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: preset.primary.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                alignment: Alignment.center,
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.add_rounded, color: Colors.white, size: 24),
-                    SizedBox(width: 8),
-                    Text(
-                      'Count',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAnalyticsSection(
-    BuildContext context,
-    List<CounterLog> logs,
-    CounterColorPreset preset,
-  ) {
-    // Generate data for the last 7 days
-    final Map<DateTime, int> last7DaysMap = {};
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    for (int i = 6; i >= 0; i--) {
-      final day = today.subtract(Duration(days: i));
-      last7DaysMap[day] = 0;
-    }
-
-    // Populate data from logs (sum positive deltas, e.g. increments)
-    for (final log in logs) {
-      if (log.actionType != CounterActionType.increment && log.actionType != CounterActionType.set) {
-        continue;
-      }
-      if (log.delta <= 0) continue;
-
-      final logDate = DateTime(log.timestamp.year, log.timestamp.month, log.timestamp.day);
-      if (last7DaysMap.containsKey(logDate)) {
-        last7DaysMap[logDate] = last7DaysMap[logDate]! + log.delta;
-      }
-    }
-
-    final barGroups = <BarChartGroupData>[];
-    final dateKeys = last7DaysMap.keys.toList();
-    double maxVal = 5.0;
-
-    for (int i = 0; i < dateKeys.length; i++) {
-      final count = last7DaysMap[dateKeys[i]]!;
-      if (count > maxVal) {
-        maxVal = count.toDouble();
-      }
-      barGroups.add(
-        BarChartGroupData(
-          x: i,
-          barRods: [
-            BarChartRodData(
-              toY: count.toDouble(),
-              color: preset.primary,
-              width: 14,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
-              backDrawRodData: BackgroundBarChartRodData(
-                show: true,
-                toY: maxVal * 1.1,
-                color: preset.primary.withOpacity(0.06),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Last 7 Days Activity',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: -0.2),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          height: 180,
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Theme.of(context).dividerColor),
-          ),
-          child: BarChart(
-            BarChartData(
-              alignment: BarChartAlignment.spaceAround,
-              maxY: maxVal * 1.2,
-              barTouchData: BarTouchData(enabled: true),
-              titlesData: FlTitlesData(
-                show: true,
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: (double value, TitleMeta meta) {
-                      final index = value.toInt();
-                      if (index < 0 || index >= dateKeys.length) {
-                        return const SizedBox.shrink();
-                      }
-                      final date = dateKeys[index];
-                      final text = DateFormat('E').format(date).substring(0, 1);
-                      return SideTitleWidget(
-                        meta: meta,
-                        space: 4,
-                        child: Text(
-                          text,
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              ),
-              gridData: const FlGridData(show: false),
-              borderData: FlBorderData(show: false),
-              barGroups: barGroups,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHistorySection(BuildContext context, List<CounterLog> logs) {
-    // Exclude basic initialization log (set to 0 with 0 delta) to clean up log list
-    // Sort logs by timestamp descending (newest first)
-    final listLogs = logs.where((l) => !(l.actionType == CounterActionType.set && l.delta == 0)).toList()
-      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'History Log',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: -0.2),
-        ),
-        const SizedBox(height: 12),
-        if (listLogs.isEmpty)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(24.0),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Theme.of(context).dividerColor),
-            ),
-            child: Center(
-              child: Text(
-                'No activity logged yet.',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-          )
-        else
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: listLogs.length,
-            itemBuilder: (context, index) {
-              final log = listLogs[index];
-              return Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Theme.of(context).dividerColor),
-                ),
-                child: Row(
-                  children: [
-                    _getLogIcon(log.actionType, log.delta),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _getLogText(log.actionType, log.delta),
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            DateFormat('MMM d, y h:mm a').format(log.timestamp),
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Text(
-                      'Result: ${log.resultingCount}',
-                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-      ],
-    );
-  }
-
-  Widget _getLogIcon(CounterActionType type, int delta) {
-    IconData icon;
-    Color color;
-    switch (type) {
-      case CounterActionType.increment:
-        icon = Icons.add_circle_outline_rounded;
-        color = Colors.green;
-        break;
-      case CounterActionType.decrement:
-        icon = Icons.remove_circle_outline_rounded;
-        color = Colors.orange;
-        break;
-      case CounterActionType.reset:
-        icon = Icons.refresh_rounded;
-        color = Colors.red;
-        break;
-      case CounterActionType.set:
-        icon = delta > 0 ? Icons.add_circle_outline_rounded : Icons.edit_note_rounded;
-        color = Colors.blue;
-        break;
-    }
-    return Container(
-      padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: color, size: 18),
-    );
-  }
-
-  String _getLogText(CounterActionType type, int delta) {
-    switch (type) {
-      case CounterActionType.increment:
-        return 'Incremented (+1)';
-      case CounterActionType.decrement:
-        return 'Decremented (-1)';
-      case CounterActionType.reset:
-        return 'Reset count';
-      case CounterActionType.set:
-        if (delta == 0) return 'Created counter';
-        return 'Set value (change of ${delta > 0 ? "+$delta" : "$delta"})';
-    }
   }
 
   void _confirmClearHistory(BuildContext context) {
@@ -533,12 +137,695 @@ class CounterDetailView extends StatelessWidget {
               },
               child: const Text(
                 'Clear',
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.red, fontWeight: FontWeight.bold),
               ),
             ),
           ],
         );
       },
     );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Hero count card
+// ---------------------------------------------------------------------------
+
+class _HeroCountCard extends StatelessWidget {
+  final Counter counter;
+  final CounterColorPreset preset;
+  final bool hasGoal;
+  final double progress;
+  final String hapticLevel;
+
+  const _HeroCountCard({
+    required this.counter,
+    required this.preset,
+    required this.hasGoal,
+    required this.progress,
+    required this.hapticLevel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BounceTap(
+      scaleFactor: 0.97,
+      onTap: () {
+        HapticsHelper.trigger(hapticLevel);
+        context.read<CounterDetailCubit>().increment();
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              preset.primary,
+              preset.secondary,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: preset.primary.withOpacity(0.35),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            _EmojiRing(
+              emoji: counter.emoji ?? '🔢',
+              progress: hasGoal ? progress : null,
+            ),
+            const SizedBox(height: 24),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 220),
+              transitionBuilder: (child, anim) => FadeTransition(
+                opacity: anim,
+                child: ScaleTransition(scale: anim, child: child),
+              ),
+              child: Text(
+                '${counter.currentCount}',
+                key: ValueKey(counter.currentCount),
+                style: const TextStyle(
+                  fontSize: 88,
+                  height: 1.0,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  letterSpacing: -3,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Tap card to count',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withOpacity(0.75),
+                letterSpacing: 0.4,
+              ),
+            ),
+            if (hasGoal) ...[
+              const SizedBox(height: 20),
+              _GoalRow(
+                current: counter.currentCount,
+                goal: counter.goalValue!,
+                progress: progress,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EmojiRing extends StatelessWidget {
+  final String emoji;
+  final double? progress;
+
+  const _EmojiRing({required this.emoji, this.progress});
+
+  @override
+  Widget build(BuildContext context) {
+    const ringSize = 92.0;
+    return SizedBox(
+      width: ringSize,
+      height: ringSize,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          if (progress != null) ...[
+            SizedBox(
+              width: ringSize,
+              height: ringSize,
+              child: CircularProgressIndicator(
+                value: 1,
+                strokeWidth: 4,
+                valueColor: AlwaysStoppedAnimation(Colors.white.withOpacity(0.18)),
+              ),
+            ),
+            SizedBox(
+              width: ringSize,
+              height: ringSize,
+              child: TweenAnimationBuilder<double>(
+                duration: const Duration(milliseconds: 360),
+                curve: Curves.easeOutCubic,
+                tween: Tween(begin: 0, end: progress),
+                builder: (_, val, __) => CircularProgressIndicator(
+                  value: val,
+                  strokeWidth: 4,
+                  strokeCap: StrokeCap.round,
+                  valueColor: const AlwaysStoppedAnimation(Colors.white),
+                ),
+              ),
+            ),
+          ],
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.16),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Text(emoji, style: const TextStyle(fontSize: 34)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GoalRow extends StatelessWidget {
+  final int current;
+  final int goal;
+  final double progress;
+
+  const _GoalRow({
+    required this.current,
+    required this.goal,
+    required this.progress,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isComplete = current >= goal;
+    final label = isComplete
+        ? 'Goal reached · $current / $goal'
+        : '$current / $goal · ${(progress * 100).round()}%';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.18),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isComplete ? Icons.check_circle_rounded : Icons.flag_rounded,
+            size: 14,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Controls
+// ---------------------------------------------------------------------------
+
+class _Controls extends StatelessWidget {
+  final CounterColorPreset preset;
+  final String hapticLevel;
+
+  const _Controls({required this.preset, required this.hapticLevel});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _ActionButton(
+            icon: Icons.remove_rounded,
+            label: 'Decrease',
+            filled: false,
+            preset: preset,
+            onTap: () {
+              HapticsHelper.trigger(hapticLevel);
+              context.read<CounterDetailCubit>().decrement();
+            },
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _ActionButton(
+            icon: Icons.add_rounded,
+            label: 'Increase',
+            filled: true,
+            preset: preset,
+            onTap: () {
+              HapticsHelper.trigger(hapticLevel);
+              context.read<CounterDetailCubit>().increment();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool filled;
+  final CounterColorPreset preset;
+  final VoidCallback onTap;
+
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.filled,
+    required this.preset,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return BounceTap(
+      onTap: onTap,
+      child: Container(
+        height: 60,
+        decoration: BoxDecoration(
+          color: filled ? preset.primary : theme.cardColor,
+          borderRadius: BorderRadius.circular(18),
+          border: filled
+              ? null
+              : Border.all(color: theme.dividerColor, width: 1),
+          boxShadow: filled
+              ? [
+                  BoxShadow(
+                    color: preset.primary.withOpacity(0.25),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : null,
+        ),
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 22,
+              color: filled ? Colors.white : preset.primary,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: filled
+                    ? Colors.white
+                    : theme.textTheme.bodyLarge?.color,
+                letterSpacing: -0.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Analytics
+// ---------------------------------------------------------------------------
+
+class _AnalyticsSection extends StatelessWidget {
+  final List<CounterLog> logs;
+  final CounterColorPreset preset;
+
+  const _AnalyticsSection({required this.logs, required this.preset});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final Map<DateTime, int> last7DaysMap = {
+      for (int i = 6; i >= 0; i--) today.subtract(Duration(days: i)): 0,
+    };
+
+    for (final log in logs) {
+      if (log.actionType != CounterActionType.increment &&
+          log.actionType != CounterActionType.set) continue;
+      if (log.delta <= 0) continue;
+      final d = DateTime(
+          log.timestamp.year, log.timestamp.month, log.timestamp.day);
+      if (last7DaysMap.containsKey(d)) {
+        last7DaysMap[d] = last7DaysMap[d]! + log.delta;
+      }
+    }
+
+    final dateKeys = last7DaysMap.keys.toList();
+    final totalThisWeek =
+        last7DaysMap.values.fold<int>(0, (a, b) => a + b);
+    double maxVal = 5;
+    for (final v in last7DaysMap.values) {
+      if (v > maxVal) maxVal = v.toDouble();
+    }
+
+    final barGroups = <BarChartGroupData>[];
+    for (int i = 0; i < dateKeys.length; i++) {
+      final isToday = dateKeys[i] == today;
+      final count = last7DaysMap[dateKeys[i]]!;
+      barGroups.add(
+        BarChartGroupData(
+          x: i,
+          barRods: [
+            BarChartRodData(
+              toY: count.toDouble(),
+              color: isToday ? preset.primary : preset.primary.withOpacity(0.35),
+              width: 16,
+              borderRadius: BorderRadius.circular(6),
+              backDrawRodData: BackgroundBarChartRodData(
+                show: true,
+                toY: maxVal * 1.1,
+                color: preset.primary.withOpacity(0.06),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Last 7 Days',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.2),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: preset.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                '$totalThisWeek total',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: preset.secondary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Container(
+          height: 180,
+          padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: theme.dividerColor),
+          ),
+          child: BarChart(
+            BarChartData(
+              alignment: BarChartAlignment.spaceAround,
+              maxY: maxVal * 1.2,
+              barTouchData: BarTouchData(
+                enabled: true,
+                touchTooltipData: BarTouchTooltipData(
+                  getTooltipColor: (_) => preset.secondary,
+                  getTooltipItem: (group, _, rod, __) {
+                    return BarTooltipItem(
+                      '${rod.toY.toInt()}',
+                      const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              titlesData: FlTitlesData(
+                show: true,
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 28,
+                    getTitlesWidget: (value, meta) {
+                      final i = value.toInt();
+                      if (i < 0 || i >= dateKeys.length) {
+                        return const SizedBox.shrink();
+                      }
+                      final isToday = dateKeys[i] == today;
+                      final text =
+                          DateFormat('E').format(dateKeys[i]).substring(0, 1);
+                      return SideTitleWidget(
+                        meta: meta,
+                        space: 6,
+                        child: Container(
+                          width: 22,
+                          height: 22,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: isToday
+                                ? preset.primary
+                                : Colors.transparent,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            text,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: isToday
+                                  ? Colors.white
+                                  : theme.textTheme.bodyMedium?.color,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                leftTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              ),
+              gridData: const FlGridData(show: false),
+              borderData: FlBorderData(show: false),
+              barGroups: barGroups,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// History
+// ---------------------------------------------------------------------------
+
+class _HistorySection extends StatelessWidget {
+  final List<CounterLog> logs;
+
+  const _HistorySection({required this.logs});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    // Exclude basic initialization log (set to 0 with 0 delta).
+    final listLogs = logs
+        .where((l) =>
+            !(l.actionType == CounterActionType.set && l.delta == 0))
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'History',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.2),
+            ),
+            if (listLogs.isNotEmpty)
+              Text(
+                '${listLogs.length} ${listLogs.length == 1 ? "entry" : "entries"}',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: theme.textTheme.bodyMedium?.color,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (listLogs.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: theme.dividerColor),
+            ),
+            child: Center(
+              child: Text(
+                'No activity logged yet.',
+                style: theme.textTheme.bodyMedium,
+              ),
+            ),
+          )
+        else
+          Container(
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: theme.dividerColor),
+            ),
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              itemCount: listLogs.length,
+              separatorBuilder: (_, __) => Divider(
+                height: 1,
+                thickness: 0.6,
+                color: theme.dividerColor,
+                indent: 56,
+              ),
+              itemBuilder: (context, index) =>
+                  _HistoryTile(log: listLogs[index]),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _HistoryTile extends StatelessWidget {
+  final CounterLog log;
+
+  const _HistoryTile({required this.log});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (icon, color, label) = _logDisplay(log);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600, fontSize: 15),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  DateFormat('MMM d · h:mm a').format(log.timestamp),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.textTheme.bodyMedium?.color,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: theme.scaffoldBackgroundColor,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              '${log.resultingCount}',
+              style: TextStyle(
+                fontFeatures: const [FontFeature.tabularFigures()],
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                color: theme.textTheme.bodyLarge?.color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  (IconData, Color, String) _logDisplay(CounterLog log) {
+    switch (log.actionType) {
+      case CounterActionType.increment:
+        return (
+          Icons.add_rounded,
+          const Color(0xFF10B981),
+          'Incremented (+${log.delta})',
+        );
+      case CounterActionType.decrement:
+        return (
+          Icons.remove_rounded,
+          const Color(0xFFF59E0B),
+          'Decremented (${log.delta})',
+        );
+      case CounterActionType.reset:
+        return (
+          Icons.refresh_rounded,
+          const Color(0xFFEF4444),
+          'Reset count',
+        );
+      case CounterActionType.set:
+        if (log.delta == 0) {
+          return (
+            Icons.flag_rounded,
+            const Color(0xFF3B82F6),
+            'Created counter',
+          );
+        }
+        return (
+          Icons.edit_note_rounded,
+          const Color(0xFF3B82F6),
+          'Set value (${log.delta > 0 ? "+${log.delta}" : "${log.delta}"})',
+        );
+    }
   }
 }
