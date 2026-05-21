@@ -267,24 +267,49 @@ class _HomeScreenState extends State<HomeScreen> {
           // Count Number
           Row(
             children: [
-              Text(
-                '${counter.currentCount}',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: preset.primary,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '${counter.currentCount}',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: preset.primary,
+                    ),
+                  ),
+                  if (counter.goalValue != null)
+                    Text(
+                      '${(progress * 100).round()}%',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: preset.primary.withOpacity(0.5),
+                      ),
+                    ),
+                ],
               ),
               if (isReorderable) ...[
                 const SizedBox(width: 12),
                 const Icon(Icons.menu_rounded, color: Colors.grey),
               ] else ...[
-                const SizedBox(width: 12),
-                // Info/Chevron icon to signal depth
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: Colors.grey.withOpacity(0.5),
-                  size: 24,
+                const SizedBox(width: 8),
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  icon: Icon(
+                    Icons.chevron_right_rounded,
+                    color: Colors.grey.withOpacity(0.5),
+                    size: 24,
+                  ),
+                  onPressed: () {
+                    HapticsHelper.selectionClick(hapticLevel);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CounterDetailScreen(counterId: counter.id),
+                      ),
+                    );
+                  },
                 ),
               ],
             ],
@@ -307,33 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
         HapticsHelper.selectionClick(hapticLevel);
         _showContextMenu(context, counter, hapticLevel);
       },
-      child: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          cardBody,
-          // Small info button overlay to improve discoverability
-          Positioned(
-            top: 4,
-            right: 4,
-            child: IconButton(
-              icon: Icon(
-                Icons.info_outline_rounded,
-                size: 18,
-                color: preset.primary.withOpacity(0.4),
-              ),
-              onPressed: () {
-                HapticsHelper.selectionClick(hapticLevel);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => CounterDetailScreen(counterId: counter.id),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+      child: cardBody,
     );
   }
 
