@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
               parent: BouncingScrollPhysics(),
             ),
             slivers: [
-              SliverAppBar.large(
+              SliverAppBar.medium(
                 title: const Text('Tickle'),
                 actions: [
                   IconButton(

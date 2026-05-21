@@ -17,7 +17,7 @@ class InsightsScreen extends StatelessWidget {
           parent: BouncingScrollPhysics(),
         ),
         slivers: [
-          const SliverAppBar.large(
+          const SliverAppBar.medium(
             title: Text('Insights'),
           ),
           BlocBuilder<StatsCubit, StatsState>(
