@@ -4,26 +4,45 @@ import 'package:equatable/equatable.dart';
 import 'package:tickle_core/tickle_core.dart';
 
 // Stats Model
+class CounterDistribution extends Equatable {
+  final String title;
+  final String? emoji;
+  final String colorHex;
+  final int count;
+
+  const CounterDistribution({
+    required this.title,
+    required this.emoji,
+    required this.colorHex,
+    required this.count,
+  });
+
+  @override
+  List<Object?> get props => [title, emoji, colorHex, count];
+}
+
 class AppStats extends Equatable {
   final int totalTapsToday;
+  final int totalTapsYesterday;
   final int totalTapsThisWeek;
   final int totalTapsThisMonth;
   final int activeStreak;
   final int longestStreak;
   final int averageTapsPerDay;
-  final String peakDayLabel;
+  final DateTime? peakDay;
   final int peakDayCount;
   final Map<DateTime, int> heatmapData; // Date (YMD) -> Total count
-  final Map<String, int> counterDistributions; // Counter Title -> Count
+  final List<CounterDistribution> counterDistributions;
 
   const AppStats({
     required this.totalTapsToday,
+    required this.totalTapsYesterday,
     required this.totalTapsThisWeek,
     required this.totalTapsThisMonth,
     required this.activeStreak,
     required this.longestStreak,
     required this.averageTapsPerDay,
-    required this.peakDayLabel,
+    required this.peakDay,
     required this.peakDayCount,
     required this.heatmapData,
     required this.counterDistributions,
@@ -32,27 +51,29 @@ class AppStats extends Equatable {
   factory AppStats.empty() {
     return const AppStats(
       totalTapsToday: 0,
+      totalTapsYesterday: 0,
       totalTapsThisWeek: 0,
       totalTapsThisMonth: 0,
       activeStreak: 0,
       longestStreak: 0,
       averageTapsPerDay: 0,
-      peakDayLabel: 'None',
+      peakDay: null,
       peakDayCount: 0,
       heatmapData: {},
-      counterDistributions: {},
+      counterDistributions: [],
     );
   }
 
   @override
   List<Object?> get props => [
         totalTapsToday,
+        totalTapsYesterday,
         totalTapsThisWeek,
         totalTapsThisMonth,
         activeStreak,
         longestStreak,
         averageTapsPerDay,
-        peakDayLabel,
+        peakDay,
         peakDayCount,
         heatmapData,
         counterDistributions,
@@ -127,22 +148,18 @@ class StatsCubit extends Cubit<StatsState> {
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
-    // Group logs by YMD date (only counting increments for totals, or count all actions? Let's count net positive changes,
-    // or simply sum positive deltas. Spec: "every counter action is logged... Resulting count". Let's sum delta for increments)
+    final yesterday = today.subtract(const Duration(days: 1));
+
     final Map<DateTime, int> dailyTaps = {};
     int totalToday = 0;
+    int totalYesterday = 0;
     int totalThisWeek = 0;
     int totalThisMonth = 0;
 
-    // Week boundaries (Monday to Sunday)
     final weekStart = today.subtract(Duration(days: today.weekday - 1));
-    // Month boundary
     final monthStart = DateTime(today.year, today.month, 1);
 
     for (final log in logs) {
-      // We count increments as taps. If reset or decrement, we don't count it as a positive tap,
-      // or we can just count increments/decrements separately. Let's count positive actions (increment / set to positive).
       if (log.actionType != CounterActionType.increment && log.actionType != CounterActionType.set) {
         continue;
       }
@@ -153,6 +170,9 @@ class StatsCubit extends Cubit<StatsState> {
 
       if (logDate == today) {
         totalToday += log.delta;
+      }
+      if (logDate == yesterday) {
+        totalYesterday += log.delta;
       }
       if (logDate.isAfter(weekStart.subtract(const Duration(seconds: 1)))) {
         totalThisWeek += log.delta;
@@ -219,27 +239,27 @@ class StatsCubit extends Cubit<StatsState> {
       }
     });
 
-    String peakDayLabel = 'None';
-    if (peakDay != null) {
-      peakDayLabel = '${peakDay!.year}-${peakDay!.month.toString().padLeft(2, '0')}-${peakDay!.day.toString().padLeft(2, '0')}';
-    }
-
-    // Distributions across counters
-    final Map<String, int> distributions = {};
-    for (final c in counters) {
-      if (c.currentCount > 0) {
-        distributions[c.title] = c.currentCount;
-      }
-    }
+    // Distributions across counters (sorted desc by count, only non-zero)
+    final distributions = counters
+        .where((c) => c.currentCount > 0)
+        .map((c) => CounterDistribution(
+              title: c.title,
+              emoji: c.emoji,
+              colorHex: c.colorHex,
+              count: c.currentCount,
+            ))
+        .toList()
+      ..sort((a, b) => b.count.compareTo(a.count));
 
     return AppStats(
       totalTapsToday: totalToday,
+      totalTapsYesterday: totalYesterday,
       totalTapsThisWeek: totalThisWeek,
       totalTapsThisMonth: totalThisMonth,
       activeStreak: current,
       longestStreak: longest,
       averageTapsPerDay: averageTaps,
-      peakDayLabel: peakDayLabel,
+      peakDay: peakDay,
       peakDayCount: maxTaps,
       heatmapData: dailyTaps,
       counterDistributions: distributions,
