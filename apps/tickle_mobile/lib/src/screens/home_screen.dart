@@ -137,12 +137,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         itemBuilder: (context, index) {
                           final counter = counters[index];
-                          return ReorderableDelayedDragStartListener(
+                          return Padding(
                             key: ValueKey(counter.id),
-                            index: index,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-                              child: _buildCounterCard(context, counter, hapticLevel, isReorderable: true),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                            child: _buildCounterCard(
+                              context,
+                              counter,
+                              hapticLevel,
+                              isReorderable: true,
+                              reorderIndex: index,
                             ),
                           );
                         },
@@ -181,12 +184,14 @@ class _HomeScreenState extends State<HomeScreen> {
     Counter counter,
     String hapticLevel, {
     bool isReorderable = false,
+    int? reorderIndex,
   }) {
     return _CounterCard(
       key: ValueKey('card-${counter.id}'),
       counter: counter,
       hapticLevel: hapticLevel,
       isReorderable: isReorderable,
+      reorderIndex: reorderIndex,
       onOpenDetails: () {
         HapticsHelper.selectionClick(hapticLevel);
         Navigator.push(
@@ -372,6 +377,7 @@ class _CounterCard extends StatefulWidget {
   final Counter counter;
   final String hapticLevel;
   final bool isReorderable;
+  final int? reorderIndex;
   final VoidCallback onOpenDetails;
   final VoidCallback onLongPressOptions;
   final VoidCallback onSlideOptions;
@@ -381,6 +387,7 @@ class _CounterCard extends StatefulWidget {
     required this.counter,
     required this.hapticLevel,
     required this.isReorderable,
+    this.reorderIndex,
     required this.onOpenDetails,
     required this.onLongPressOptions,
     required this.onSlideOptions,
@@ -511,8 +518,21 @@ class _CounterCardState extends State<_CounterCard> {
                 ],
               ),
               if (widget.isReorderable) ...[
-                const SizedBox(width: 12),
-                const Icon(Icons.menu_rounded, color: Colors.grey),
+                const SizedBox(width: 4),
+                ReorderableDragStartListener(
+                  index: widget.reorderIndex ?? 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 14,
+                    ),
+                    child: const Icon(
+                      Icons.drag_indicator_rounded,
+                      color: Colors.grey,
+                      size: 26,
+                    ),
+                  ),
+                ),
               ] else ...[
                 const SizedBox(width: 12),
                 RapidCountButton(
