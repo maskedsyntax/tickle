@@ -49,6 +49,7 @@ dependencies:
     path: ../../packages/tickle_core
   tickle_data:
     path: ../../packages/tickle_data
+  pull_down_button: ^0.10.2
 
 dev_dependencies:
   flutter_test:

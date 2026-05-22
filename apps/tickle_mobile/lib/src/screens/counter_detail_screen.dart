@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tickle_core/tickle_core.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import '../cubits/counter_detail_cubit.dart';
 import '../cubits/settings_cubit.dart';
 import '../theme/theme.dart';
@@ -51,6 +53,7 @@ class CounterDetailView extends StatelessWidget {
         if (state is CounterDetailLoaded) {
           final counter = state.counter;
           final logs = state.logs;
+          final stats = state.stats;
           final preset = AppColors.getPresetByHex(counter.colorHex);
           final hasGoal = counter.goalValue != null && counter.goalValue! > 0;
           final progress = hasGoal
@@ -62,27 +65,65 @@ class CounterDetailView extends StatelessWidget {
             appBar: AppBar(
               title: Text(counter.title),
               actions: [
-                PopupMenuButton<String>(
-                  onSelected: (val) {
-                    if (val == 'reset') {
-                      HapticsHelper.selectionClick(hapticLevel);
-                      context.read<CounterDetailCubit>().reset();
-                    } else if (val == 'clear_history') {
-                      HapticsHelper.selectionClick(hapticLevel);
-                      _confirmClearHistory(context);
+                Builder(
+                  builder: (context) {
+                    final platform = Theme.of(context).platform;
+                    final isApple = platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
+
+                    if (isApple) {
+                      return PullDownButton(
+                        itemBuilder: (context) => [
+                          PullDownMenuItem(
+                            title: 'Reset Count',
+                            icon: CupertinoIcons.arrow_counterclockwise,
+                            onTap: () {
+                              HapticsHelper.selectionClick(hapticLevel);
+                              context.read<CounterDetailCubit>().reset();
+                            },
+                          ),
+                          PullDownMenuItem(
+                            title: 'Clear History Logs',
+                            icon: CupertinoIcons.delete,
+                            isDestructive: true,
+                            onTap: () {
+                              HapticsHelper.selectionClick(hapticLevel);
+                              _confirmClearHistory(context);
+                            },
+                          ),
+                        ],
+                        buttonBuilder: (context, showMenu) => IconButton(
+                          icon: const Icon(CupertinoIcons.ellipsis_circle),
+                          onPressed: showMenu,
+                        ),
+                      );
                     }
+
+                    return PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert_rounded),
+                      onSelected: (val) {
+                        if (val == 'reset') {
+                          HapticsHelper.selectionClick(hapticLevel);
+                          context.read<CounterDetailCubit>().reset();
+                        } else if (val == 'clear_history') {
+                          HapticsHelper.selectionClick(hapticLevel);
+                          _confirmClearHistory(context);
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'reset',
+                          child: Text('Reset Count'),
+                        ),
+                        const PopupMenuItem(
+                          value: 'clear_history',
+                          child: Text(
+                            'Clear History Logs',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    );
                   },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'reset',
-                      child: Text('Reset Count'),
-                    ),
-                    const PopupMenuItem(
-                      value: 'clear_history',
-                      child: Text('Clear History Logs',
-                          style: TextStyle(color: Colors.red)),
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -101,6 +142,10 @@ class CounterDetailView extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   _Controls(preset: preset, hapticLevel: hapticLevel),
+                  const SizedBox(height: 28),
+                  _StreaksSection(stats: stats, preset: preset),
+                  const SizedBox(height: 28),
+                  _HeatmapSection(heatmapData: stats.heatmapData, preset: preset),
                   const SizedBox(height: 28),
                   _AnalyticsSection(logs: logs, preset: preset),
                   const SizedBox(height: 28),
@@ -842,4 +887,443 @@ class _HistoryTile extends StatelessWidget {
         );
     }
   }
+}
+
+// ---------------------------------------------------------------------------
+// Streaks
+// ---------------------------------------------------------------------------
+
+class _StreaksSection extends StatelessWidget {
+  final CounterStats stats;
+  final CounterColorPreset preset;
+
+  const _StreaksSection({required this.stats, required this.preset});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _StatTile(
+            label: 'Active Streak',
+            value: '${stats.activeStreak}d',
+            icon: Icons.local_fire_department_rounded,
+            preset: preset,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _StatTile(
+            label: 'Best Streak',
+            value: '${stats.longestStreak}d',
+            icon: Icons.emoji_events_rounded,
+            preset: preset,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StatTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+  final CounterColorPreset preset;
+
+  const _StatTile({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.preset,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: theme.dividerColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: preset.primary.withOpacity(0.14),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                alignment: Alignment.center,
+                child: Icon(icon, color: preset.primary, size: 16),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: theme.textTheme.bodyMedium?.color,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              value,
+              maxLines: 1,
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.8,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Activity heatmap
+// ---------------------------------------------------------------------------
+
+class _HeatmapSection extends StatelessWidget {
+  final Map<DateTime, int> heatmapData;
+  final CounterColorPreset preset;
+
+  const _HeatmapSection({required this.heatmapData, required this.preset});
+
+  static const int _weeks = 16;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final startDayOffset = today.weekday % 7;
+    final currentWeekSunday = today.subtract(Duration(days: startDayOffset));
+    final startDate = currentWeekSunday.subtract(const Duration(days: (_weeks - 1) * 7));
+
+    final weeks = <List<DateTime>>[];
+    for (int col = 0; col < _weeks; col++) {
+      final week = <DateTime>[];
+      for (int row = 0; row < 7; row++) {
+        week.add(startDate.add(Duration(days: col * 7 + row)));
+      }
+      weeks.add(week);
+    }
+
+    int maxCount = 0;
+    for (final v in heatmapData.values) {
+      if (v > maxCount) maxCount = v;
+    }
+    final totalActiveDays = heatmapData.values.where((v) => v > 0).length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Activity Map',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.2),
+            ),
+            Text(
+              '$totalActiveDays active days',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: theme.textTheme.bodyMedium?.color,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: theme.dividerColor),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _MonthLabels(weeks: weeks),
+              const SizedBox(height: 6),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const _DayLabels(),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: _HeatmapGrid(
+                      weeks: weeks,
+                      heatmapData: heatmapData,
+                      today: today,
+                      maxCount: maxCount,
+                      preset: preset,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'Less',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: theme.textTheme.bodyMedium?.color,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  for (final level in [0, 1, 2, 3, 4])
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: Container(
+                        width: 11,
+                        height: 11,
+                        decoration: BoxDecoration(
+                          color: _heatmapColor(context, level, 4, preset),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'More',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: theme.textTheme.bodyMedium?.color,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MonthLabels extends StatelessWidget {
+  final List<List<DateTime>> weeks;
+
+  const _MonthLabels({required this.weeks});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(left: 22),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final labels = <Widget>[];
+          String? lastMonth;
+          for (int i = 0; i < weeks.length; i++) {
+            final first = weeks[i].first;
+            final month = DateFormat('MMM').format(first);
+            if (lastMonth != month) {
+              labels.add(Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    month,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: theme.textTheme.bodyMedium?.color,
+                    ),
+                  ),
+                ),
+              ));
+              lastMonth = month;
+            } else {
+              labels.add(const Expanded(child: SizedBox()));
+            }
+          }
+          return Row(children: labels);
+        },
+      ),
+    );
+  }
+}
+
+class _DayLabels extends StatelessWidget {
+  static const labels = ['', 'M', '', 'W', '', 'F', ''];
+
+  const _DayLabels();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (final l in labels)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 1.5),
+            child: SizedBox(
+              width: 14,
+              height: 13,
+              child: Text(
+                l,
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w600,
+                  color: theme.textTheme.bodyMedium?.color,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _HeatmapGrid extends StatelessWidget {
+  final List<List<DateTime>> weeks;
+  final Map<DateTime, int> heatmapData;
+  final DateTime today;
+  final int maxCount;
+  final CounterColorPreset preset;
+
+  const _HeatmapGrid({
+    required this.weeks,
+    required this.heatmapData,
+    required this.today,
+    required this.maxCount,
+    required this.preset,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 3.0;
+        final available = constraints.maxWidth;
+        final cell = ((available - spacing * (weeks.length - 1)) / weeks.length).floorToDouble();
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            for (final week in weeks)
+              Column(
+                children: [
+                  for (final date in week) ...[
+                    _HeatmapCell(
+                      date: date,
+                      count: heatmapData[date] ?? 0,
+                      isFuture: date.isAfter(today),
+                      isToday: date == today,
+                      size: cell,
+                      maxCount: maxCount,
+                      preset: preset,
+                    ),
+                    if (date != week.last) const SizedBox(height: spacing),
+                  ],
+                ],
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _HeatmapCell extends StatelessWidget {
+  final DateTime date;
+  final int count;
+  final bool isFuture;
+  final bool isToday;
+  final double size;
+  final int maxCount;
+  final CounterColorPreset preset;
+
+  const _HeatmapCell({
+    required this.date,
+    required this.count,
+    required this.isFuture,
+    required this.isToday,
+    required this.size,
+    required this.maxCount,
+    required this.preset,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isFuture) {
+      return SizedBox(width: size, height: size);
+    }
+    final color = _heatmapColor(context, count, maxCount, preset);
+    return GestureDetector(
+      onTap: count > 0 ? () => _showCellInfo(context) : null,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(3),
+          border: isToday
+              ? Border.all(
+                  color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
+                  width: 1.2,
+                )
+              : null,
+        ),
+      ),
+    );
+  }
+
+  void _showCellInfo(BuildContext context) {
+    final formatted = DateFormat('MMM d, yyyy').format(date);
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(20),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        content: Text('$count ${count == 1 ? "tap" : "taps"} on $formatted'),
+      ),
+    );
+  }
+}
+
+Color _heatmapColor(BuildContext context, int count, int maxCount, CounterColorPreset preset) {
+  final theme = Theme.of(context);
+  final isDark = theme.brightness == Brightness.dark;
+
+  if (count == 0) {
+    return isDark ? const Color(0xFF1F1F22) : const Color(0xFFEEF0F3);
+  }
+  final effectiveMax = maxCount < 4 ? 4 : maxCount;
+  final ratio = (count / effectiveMax).clamp(0.0, 1.0);
+  if (ratio <= 0.25) return preset.primary.withOpacity(0.22);
+  if (ratio <= 0.5) return preset.primary.withOpacity(0.45);
+  if (ratio <= 0.75) return preset.primary.withOpacity(0.7);
+  return preset.primary;
 }

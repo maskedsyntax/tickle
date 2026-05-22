@@ -4,6 +4,22 @@ import 'package:equatable/equatable.dart';
 import 'package:tickle_core/tickle_core.dart';
 import 'package:uuid/uuid.dart';
 
+// Models
+class CounterStats extends Equatable {
+  final int activeStreak;
+  final int longestStreak;
+  final Map<DateTime, int> heatmapData;
+
+  const CounterStats({
+    required this.activeStreak,
+    required this.longestStreak,
+    required this.heatmapData,
+  });
+
+  @override
+  List<Object?> get props => [activeStreak, longestStreak, heatmapData];
+}
+
 // States
 abstract class CounterDetailState extends Equatable {
   const CounterDetailState();
@@ -19,14 +35,16 @@ class CounterDetailLoading extends CounterDetailState {}
 class CounterDetailLoaded extends CounterDetailState {
   final Counter counter;
   final List<CounterLog> logs;
+  final CounterStats stats;
 
   const CounterDetailLoaded({
     required this.counter,
     required this.logs,
+    required this.stats,
   });
 
   @override
-  List<Object?> get props => [counter, logs];
+  List<Object?> get props => [counter, logs, stats];
 }
 
 class CounterDetailError extends CounterDetailState {
@@ -78,12 +96,73 @@ class CounterDetailCubit extends Cubit<CounterDetailState> {
     }
   }
 
+  CounterStats _calculateStats(List<CounterLog> logs) {
+    if (logs.isEmpty) {
+      return const CounterStats(activeStreak: 0, longestStreak: 0, heatmapData: {});
+    }
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final Map<DateTime, int> dailyTaps = {};
+
+    for (final log in logs) {
+      if (log.actionType != CounterActionType.increment && log.actionType != CounterActionType.set) {
+        continue;
+      }
+      if (log.delta <= 0) continue;
+
+      final logDate = DateTime(log.timestamp.year, log.timestamp.month, log.timestamp.day);
+      dailyTaps[logDate] = (dailyTaps[logDate] ?? 0) + log.delta;
+    }
+
+    final sortedTapDates = dailyTaps.keys.toList()..sort();
+    int longest = 0;
+    int current = 0;
+
+    if (sortedTapDates.isNotEmpty) {
+      int currentRun = 1;
+      for (int i = 0; i < sortedTapDates.length; i++) {
+        if (i > 0) {
+          final diff = sortedTapDates[i].difference(sortedTapDates[i - 1]).inDays;
+          if (diff == 1) {
+            currentRun++;
+          } else if (diff > 1) {
+            if (currentRun > longest) longest = currentRun;
+            currentRun = 1;
+          }
+        }
+      }
+      if (currentRun > longest) longest = currentRun;
+
+      final hasTapToday = dailyTaps.containsKey(today);
+      final yesterday = today.subtract(const Duration(days: 1));
+      final hasTapYesterday = dailyTaps.containsKey(yesterday);
+
+      if (hasTapToday || hasTapYesterday) {
+        current = 0;
+        DateTime checkDate = hasTapToday ? today : yesterday;
+        while (dailyTaps.containsKey(checkDate)) {
+          current++;
+          checkDate = checkDate.subtract(const Duration(days: 1));
+        }
+      }
+    }
+
+    return CounterStats(
+      activeStreak: current,
+      longestStreak: longest,
+      heatmapData: dailyTaps,
+    );
+  }
+
   void _emitLoaded() {
     if (isClosed) return;
     if (_currentCounter != null) {
+      final stats = _calculateStats(_currentLogs);
       emit(CounterDetailLoaded(
         counter: _currentCounter!,
         logs: List.from(_currentLogs),
+        stats: stats,
       ));
     }
   }
@@ -91,9 +170,6 @@ class CounterDetailCubit extends Cubit<CounterDetailState> {
   Future<void> increment() async {
     if (_currentCounter == null) return;
     try {
-      // Capture timestamp & id at action time so log ordering survives
-      // rapid taps (DB stores datetime at second precision; UUID v7 sorts
-      // chronologically as a tiebreaker).
       final timestamp = DateTime.now();
       final logId = const Uuid().v7();
       final newCount = _currentCounter!.currentCount + 1;

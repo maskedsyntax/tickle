@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tickle_core/tickle_core.dart';
 import '../cubits/counters_cubit.dart';
-import '../cubits/counter_detail_cubit.dart';
 import '../cubits/settings_cubit.dart';
 import '../theme/theme.dart';
 import '../widgets/bounce_tap.dart';
@@ -512,6 +511,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return const AddCounterSheet();

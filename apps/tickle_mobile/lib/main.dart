@@ -6,9 +6,7 @@ import 'package:tickle_data/tickle_data.dart';
 import 'src/theme/theme.dart';
 import 'src/cubits/settings_cubit.dart';
 import 'src/cubits/counters_cubit.dart';
-import 'src/cubits/stats_cubit.dart';
 import 'src/screens/home_screen.dart';
-import 'src/screens/insights_screen.dart';
 import 'src/screens/settings_screen.dart';
 import 'src/utils/haptic_feedback.dart';
 
@@ -33,9 +31,6 @@ void main() async {
           ),
           BlocProvider(
             create: (_) => CountersCubit(repository)..loadCounters(),
-          ),
-          BlocProvider(
-            create: (_) => StatsCubit(repository)..loadStats(),
           ),
         ],
         child: const MyApp(),
@@ -86,7 +81,6 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const InsightsScreen(),
     const SettingsScreen(),
   ];
 
@@ -127,11 +121,6 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
               icon: Icon(Icons.circle_outlined),
               activeIcon: Icon(Icons.lens),
               label: 'Counters',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart_outlined),
-              activeIcon: Icon(Icons.bar_chart_rounded),
-              label: 'Insights',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings_outlined),

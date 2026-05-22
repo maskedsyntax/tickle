@@ -268,9 +268,6 @@ Target:
 ### Home
 List of counters
 
-### Insights
-Statistics and history
-
 ### Settings
 Preferences and backups
 
@@ -418,3 +415,4 @@ A successful v1 should:
 # 19. Long-Term Vision
 
 Tickle aims to become the simplest and most delightful way to track repeated actions across phones, watches, widgets, and ambient devices.
+nt devices.

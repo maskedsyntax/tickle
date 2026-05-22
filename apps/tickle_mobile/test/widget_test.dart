@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,7 +5,6 @@ import 'package:tickle_core/tickle_core.dart';
 import 'package:tickle_mobile/main.dart';
 import 'package:tickle_mobile/src/cubits/settings_cubit.dart';
 import 'package:tickle_mobile/src/cubits/counters_cubit.dart';
-import 'package:tickle_mobile/src/cubits/stats_cubit.dart';
 
 class FakeCountersRepository implements CountersRepository {
   @override
@@ -43,8 +41,6 @@ class FakeCountersRepository implements CountersRepository {
   Future<List<CounterLog>> getAllLogs() async => [];
 }
 
-
-
 void main() {
   testWidgets('App starts and displays onboarding screen when no counters exist', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({});
@@ -60,9 +56,6 @@ void main() {
             ),
             BlocProvider(
               create: (_) => CountersCubit(repository)..loadCounters(),
-            ),
-            BlocProvider(
-              create: (_) => StatsCubit(repository)..loadStats(),
             ),
           ],
           child: const MyApp(),
