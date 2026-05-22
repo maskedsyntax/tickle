@@ -7,6 +7,7 @@ import '../cubits/settings_cubit.dart';
 import '../theme/theme.dart';
 import '../widgets/bounce_tap.dart';
 import '../utils/haptic_feedback.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'counter_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -187,23 +188,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ? (counter.currentCount / counter.goalValue!).clamp(0.0, 1.0)
         : 0.0;
 
-    Widget cardBody = Container(
+    Widget cardContent = Container(
       padding: const EdgeInsets.all(18.0),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderThemeColor, width: 1.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      color: cardColor,
       child: Row(
         children: [
-          // Emoji badge with goal progress outer ring
           Stack(
             alignment: Alignment.center,
             children: [
@@ -234,7 +223,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(width: 16),
-          // Title & Goal
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,7 +251,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          // Count Number
           Row(
             children: [
               Column(
@@ -292,23 +279,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 const Icon(Icons.menu_rounded, color: Colors.grey),
               ] else ...[
-                const SizedBox(width: 8),
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  icon: Icon(
-                    Icons.chevron_right_rounded,
-                    color: Colors.grey.withOpacity(0.5),
-                    size: 24,
-                  ),
-                  onPressed: () {
-                    HapticsHelper.selectionClick(hapticLevel);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => CounterDetailScreen(counterId: counter.id),
-                      ),
-                    );
+                const SizedBox(width: 12),
+                BounceTap(
+                  onTap: () {
+                    HapticsHelper.trigger(hapticLevel);
+                    context.read<CountersCubit>().incrementCounter(counter.id);
                   },
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: preset.primary.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      Icons.add_rounded,
+                      color: preset.primary,
+                      size: 26,
+                    ),
+                  ),
                 ),
               ],
             ],
@@ -318,28 +307,72 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     if (isReorderable) {
-      return cardBody;
+      return Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), border: Border.all(color: borderThemeColor, width: 1.0), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))]), child: ClipRRect(borderRadius: BorderRadius.circular(20), child: cardContent));
     }
 
     final goalSuffix = counter.goalValue != null
         ? ', goal ${counter.currentCount} of ${counter.goalValue}'
         : '';
-    return Semantics(
+
+    final interactiveCard = Semantics(
       button: true,
       label: '${counter.title}, count ${counter.currentCount}$goalSuffix',
-      hint: 'Double tap to increment, long press for options',
+      hint: 'Tap to view details, swipe for options',
       excludeSemantics: true,
       child: BounceTap(
         onTap: () {
-          HapticsHelper.trigger(hapticLevel);
-          // Direct tap on card increments the count
-          context.read<CountersCubit>().incrementCounter(counter.id);
+          HapticsHelper.selectionClick(hapticLevel);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CounterDetailScreen(counterId: counter.id),
+            ),
+          );
         },
         onLongPress: () {
           HapticsHelper.selectionClick(hapticLevel);
           _showContextMenu(context, counter, hapticLevel);
         },
-        child: cardBody,
+        child: cardContent,
+      ),
+    );
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: borderThemeColor, width: 1.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Slidable(
+          key: ValueKey(counter.id),
+          endActionPane: ActionPane(
+            motion: const DrawerMotion(),
+            extentRatio: 0.25,
+            children: [
+              SlidableAction(
+                onPressed: (context) {
+                  HapticsHelper.selectionClick(hapticLevel);
+                  _showContextMenu(context, counter, hapticLevel);
+                },
+                backgroundColor: Theme.of(context).brightness == Brightness.dark 
+                    ? const Color(0xFF2C2C2E) 
+                    : const Color(0xFFE5E5EA),
+                foregroundColor: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
+                icon: Icons.more_horiz_rounded,
+                label: 'Options',
+              ),
+            ],
+          ),
+          child: interactiveCard,
+        ),
       ),
     );
   }
@@ -373,43 +406,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                _buildMenuOption(
-                  context,
-                  icon: Icons.bar_chart_rounded,
-                  label: 'View History & Details',
-                  color: Colors.blue,
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => CounterDetailScreen(counterId: counter.id),
-                      ),
-                    );
-                  },
-                ),
-                _buildMenuOption(
-                  context,
-                  icon: Icons.remove_rounded,
-                  label: 'Decrement (-1)',
-                  color: Colors.orange,
-                  onTap: () {
-                    Navigator.pop(context);
-                    HapticsHelper.trigger(hapticLevel);
-                    context.read<CountersCubit>().decrementCounter(counter.id);
-                  },
-                ),
-                _buildMenuOption(
-                  context,
-                  icon: Icons.refresh_rounded,
-                  label: 'Reset to 0',
-                  color: Colors.red,
-                  onTap: () {
-                    Navigator.pop(context);
-                    HapticsHelper.trigger(hapticLevel);
-                    context.read<CountersCubit>().resetCounter(counter.id);
-                  },
-                ),
                 _buildMenuOption(
                   context,
                   icon: Icons.copy_rounded,

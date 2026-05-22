@@ -50,6 +50,7 @@ dependencies:
   tickle_data:
     path: ../../packages/tickle_data
   pull_down_button: ^0.10.2
+  flutter_slidable: ^4.0.3
 
 dev_dependencies:
   flutter_test:
