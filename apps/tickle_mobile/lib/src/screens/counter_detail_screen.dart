@@ -9,6 +9,8 @@ import '../cubits/counter_detail_cubit.dart';
 import '../cubits/settings_cubit.dart';
 import '../theme/theme.dart';
 import '../widgets/bounce_tap.dart';
+import '../widgets/rapid_count_button.dart';
+import '../widgets/counter_form_sheet.dart';
 import '../utils/haptic_feedback.dart';
 
 class CounterDetailScreen extends StatelessWidget {
@@ -28,8 +30,57 @@ class CounterDetailScreen extends StatelessWidget {
   }
 }
 
-class CounterDetailView extends StatelessWidget {
+class CounterDetailView extends StatefulWidget {
   const CounterDetailView({super.key});
+
+  @override
+  State<CounterDetailView> createState() => _CounterDetailViewState();
+}
+
+class _CounterDetailViewState extends State<CounterDetailView> {
+  void _showEditCounterSheet(BuildContext context, Counter counter) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return CounterFormSheet(initialCounter: counter);
+      },
+    );
+  }
+
+  void _confirmClearHistory(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (diagContext) {
+        return AlertDialog.adaptive(
+          title: const Text('Clear History?'),
+          content: const Text(
+            'This will clear all logs and reset the count back to 0. This cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(diagContext),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(diagContext);
+                context.read<CounterDetailCubit>().clearHistory();
+              },
+              child: const Text(
+                'Clear Everything',
+                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  int _rapidDelta = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +106,11 @@ class CounterDetailView extends StatelessWidget {
           final logs = state.logs;
           final stats = state.stats;
           final preset = AppColors.getPresetByHex(counter.colorHex);
+          
+          final optimisticCount = counter.currentCount + _rapidDelta;
           final hasGoal = counter.goalValue != null && counter.goalValue! > 0;
           final progress = hasGoal
-              ? (counter.currentCount / counter.goalValue!).clamp(0.0, 1.0)
+              ? (optimisticCount / counter.goalValue!).clamp(0.0, 1.0)
               : 0.0;
           final hapticLevel = settingsCubit.state.hapticLevel;
 
@@ -73,6 +126,14 @@ class CounterDetailView extends StatelessWidget {
                     if (isApple) {
                       return PullDownButton(
                         itemBuilder: (context) => [
+                          PullDownMenuItem(
+                            title: 'Edit Counter',
+                            icon: CupertinoIcons.pencil,
+                            onTap: () {
+                              HapticsHelper.selectionClick(hapticLevel);
+                              _showEditCounterSheet(context, counter);
+                            },
+                          ),
                           PullDownMenuItem(
                             title: 'Reset Count',
                             icon: CupertinoIcons.arrow_counterclockwise,
@@ -101,7 +162,10 @@ class CounterDetailView extends StatelessWidget {
                     return PopupMenuButton<String>(
                       icon: const Icon(Icons.more_vert_rounded),
                       onSelected: (val) {
-                        if (val == 'reset') {
+                        if (val == 'edit') {
+                          HapticsHelper.selectionClick(hapticLevel);
+                          _showEditCounterSheet(context, counter);
+                        } else if (val == 'reset') {
                           HapticsHelper.selectionClick(hapticLevel);
                           context.read<CounterDetailCubit>().reset();
                         } else if (val == 'clear_history') {
@@ -110,6 +174,10 @@ class CounterDetailView extends StatelessWidget {
                         }
                       },
                       itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'edit',
+                          child: Text('Edit Counter'),
+                        ),
                         const PopupMenuItem(
                           value: 'reset',
                           child: Text('Reset Count'),
@@ -129,65 +197,42 @@ class CounterDetailView extends StatelessWidget {
             ),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _HeroCountCard(
-                    counter: counter,
-                    preset: preset,
-                    hasGoal: hasGoal,
-                    progress: progress,
-                    hapticLevel: hapticLevel,
-                  ),
-                  const SizedBox(height: 20),
-                  _Controls(preset: preset, hapticLevel: hapticLevel),
-                  const SizedBox(height: 28),
-                  _StreaksSection(stats: stats, preset: preset),
-                  const SizedBox(height: 28),
-                  _HeatmapSection(heatmapData: stats.heatmapData, preset: preset),
-                  const SizedBox(height: 28),
-                  _AnalyticsSection(logs: logs, preset: preset),
-                  const SizedBox(height: 28),
-                  _HistorySection(logs: logs),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _HeroCountCard(
+                      counter: counter,
+                      optimisticCount: optimisticCount,
+                      preset: preset,
+                      hasGoal: hasGoal,
+                      progress: progress,
+                      hapticLevel: hapticLevel,
+                    ),
+                    const SizedBox(height: 20),
+                    _Controls(
+                      preset: preset, 
+                      hapticLevel: hapticLevel,
+                      onTickDecrement: (delta) => setState(() => _rapidDelta = -delta),
+                      onTickIncrement: (delta) => setState(() => _rapidDelta = delta),
+                    ),
+                    const SizedBox(height: 28),
+                    _StreaksSection(stats: stats, preset: preset),
+                    const SizedBox(height: 28),
+                    _HeatmapSection(heatmapData: stats.heatmapData, preset: preset),
+                    const SizedBox(height: 28),
+                    _AnalyticsSection(logs: logs, preset: preset),
+                    const SizedBox(height: 28),
+                    _HistorySection(logs: logs),
+                  ],
+                ),
               ),
             ),
           );
         }
 
         return const Scaffold();
-      },
-    );
-  }
-
-  void _confirmClearHistory(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (diagContext) {
-        return AlertDialog.adaptive(
-          title: const Text('Clear History?'),
-          content: const Text(
-            'This will clear all logs and reset the count back to 0. This cannot be undone.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(diagContext),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(diagContext);
-                context.read<CounterDetailCubit>().clearHistory();
-              },
-              child: const Text(
-                'Clear',
-                style: TextStyle(
-                    color: Colors.red, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        );
       },
     );
   }
@@ -199,6 +244,7 @@ class CounterDetailView extends StatelessWidget {
 
 class _HeroCountCard extends StatelessWidget {
   final Counter counter;
+  final int optimisticCount;
   final CounterColorPreset preset;
   final bool hasGoal;
   final double progress;
@@ -206,6 +252,7 @@ class _HeroCountCard extends StatelessWidget {
 
   const _HeroCountCard({
     required this.counter,
+    required this.optimisticCount,
     required this.preset,
     required this.hasGoal,
     required this.progress,
@@ -214,13 +261,42 @@ class _HeroCountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rapidDelta = optimisticCount - counter.currentCount;
+    final isRapid = rapidDelta != 0;
     final goalSuffix = hasGoal
-        ? ', goal ${counter.currentCount} of ${counter.goalValue}'
+        ? ', goal $optimisticCount of ${counter.goalValue}'
         : '';
+    final countStyle = const TextStyle(
+      fontSize: 88,
+      height: 1.0,
+      fontWeight: FontWeight.w800,
+      color: Colors.white,
+      letterSpacing: -3,
+    );
+
+    // While rapid-counting we render the number directly so it ticks in
+    // real time. The AnimatedSwitcher's 220ms transition is slower than the
+    // 150ms tick interval and would smear values together.
+    final countText = isRapid
+        ? Text('$optimisticCount', maxLines: 1, style: countStyle)
+        : AnimatedSwitcher(
+            duration: const Duration(milliseconds: 220),
+            transitionBuilder: (child, anim) => FadeTransition(
+              opacity: anim,
+              child: ScaleTransition(scale: anim, child: child),
+            ),
+            child: Text(
+              '$optimisticCount',
+              key: ValueKey(optimisticCount),
+              maxLines: 1,
+              style: countStyle,
+            ),
+          );
+
     return Semantics(
       button: true,
       label:
-          '${counter.title}, count ${counter.currentCount}$goalSuffix',
+          '${counter.title}, count $optimisticCount$goalSuffix',
       hint: 'Double tap to increment',
       excludeSemantics: true,
       child: BounceTap(
@@ -257,42 +333,38 @@ class _HeroCountCard extends StatelessWidget {
               progress: hasGoal ? progress : null,
             ),
             const SizedBox(height: 24),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                transitionBuilder: (child, anim) => FadeTransition(
-                  opacity: anim,
-                  child: ScaleTransition(scale: anim, child: child),
-                ),
-                child: Text(
-                  '${counter.currentCount}',
-                  key: ValueKey(counter.currentCount),
-                  maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 88,
-                    height: 1.0,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                    letterSpacing: -3,
-                  ),
-                ),
-              ),
-            ),
+            FittedBox(fit: BoxFit.scaleDown, child: countText),
             const SizedBox(height: 4),
-            Text(
-              'Tap card to count',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: Colors.white.withOpacity(0.75),
-                letterSpacing: 0.4,
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 180),
+              transitionBuilder: (child, anim) => FadeTransition(
+                opacity: anim,
+                child: SizeTransition(
+                  sizeFactor: anim,
+                  axisAlignment: -1,
+                  child: child,
+                ),
               ),
+              child: isRapid
+                  ? _RapidDeltaPill(
+                      key: const ValueKey('rapid'),
+                      delta: rapidDelta,
+                    )
+                  : Text(
+                      'Tap card to count',
+                      key: const ValueKey('hint'),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withOpacity(0.75),
+                        letterSpacing: 0.4,
+                      ),
+                    ),
             ),
             if (hasGoal) ...[
               const SizedBox(height: 20),
               _GoalRow(
-                current: counter.currentCount,
+                current: optimisticCount,
                 goal: counter.goalValue!,
                 progress: progress,
               ),
@@ -300,6 +372,34 @@ class _HeroCountCard extends StatelessWidget {
           ],
         ),
       ),
+      ),
+    );
+  }
+}
+
+class _RapidDeltaPill extends StatelessWidget {
+  final int delta;
+
+  const _RapidDeltaPill({super.key, required this.delta});
+
+  @override
+  Widget build(BuildContext context) {
+    final sign = delta > 0 ? '+' : '';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.22),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        '$sign$delta',
+        style: const TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+          fontFeatures: [FontFeature.tabularFigures()],
+          letterSpacing: 0.2,
+        ),
       ),
     );
   }
@@ -415,36 +515,68 @@ class _GoalRow extends StatelessWidget {
 class _Controls extends StatelessWidget {
   final CounterColorPreset preset;
   final String hapticLevel;
+  final void Function(int delta) onTickDecrement;
+  final void Function(int delta) onTickIncrement;
 
-  const _Controls({required this.preset, required this.hapticLevel});
+  const _Controls({
+    required this.preset, 
+    required this.hapticLevel,
+    required this.onTickDecrement,
+    required this.onTickIncrement,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(
-          child: _ActionButton(
-            icon: Icons.remove_rounded,
-            label: 'Decrease',
-            filled: false,
-            preset: preset,
-            onTap: () {
-              HapticsHelper.trigger(hapticLevel);
-              context.read<CounterDetailCubit>().decrement();
-            },
+        RapidCountButton(
+          isDecrement: true,
+          hapticLevel: hapticLevel,
+          onTap: () {
+            HapticsHelper.trigger(hapticLevel);
+            context.read<CounterDetailCubit>().decrement();
+          },
+          onTick: onTickDecrement,
+          onCommit: (delta) {
+            context.read<CounterDetailCubit>().decrementBy(delta);
+          },
+          child: Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              color: preset.primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Icon(Icons.remove_rounded, color: preset.primary, size: 36),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Expanded(
-          child: _ActionButton(
-            icon: Icons.add_rounded,
-            label: 'Increase',
-            filled: true,
-            preset: preset,
+          child: RapidCountButton(
+            hapticLevel: hapticLevel,
             onTap: () {
               HapticsHelper.trigger(hapticLevel);
               context.read<CounterDetailCubit>().increment();
             },
+            onTick: onTickIncrement,
+            onCommit: (delta) {
+              context.read<CounterDetailCubit>().incrementBy(delta);
+            },
+            child: Container(
+              height: 72,
+              decoration: BoxDecoration(
+                color: preset.primary,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: preset.primary.withOpacity(0.3),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.add_rounded, color: Colors.white, size: 40),
+            ),
           ),
         ),
       ],

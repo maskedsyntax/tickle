@@ -168,11 +168,15 @@ class CounterDetailCubit extends Cubit<CounterDetailState> {
   }
 
   Future<void> increment() async {
-    if (_currentCounter == null) return;
+    await incrementBy(1);
+  }
+
+  Future<void> incrementBy(int delta) async {
+    if (_currentCounter == null || delta == 0) return;
     try {
       final timestamp = DateTime.now();
       final logId = const Uuid().v7();
-      final newCount = _currentCounter!.currentCount + 1;
+      final newCount = _currentCounter!.currentCount + delta;
       final updatedCounter = _currentCounter!.copyWith(currentCount: newCount);
 
       _currentCounter = updatedCounter;
@@ -184,7 +188,7 @@ class CounterDetailCubit extends Cubit<CounterDetailState> {
         counterId: _counterId,
         timestamp: timestamp,
         actionType: CounterActionType.increment,
-        delta: 1,
+        delta: delta,
         resultingCount: newCount,
       ));
     } catch (e) {
@@ -194,11 +198,15 @@ class CounterDetailCubit extends Cubit<CounterDetailState> {
   }
 
   Future<void> decrement() async {
-    if (_currentCounter == null) return;
+    await decrementBy(1);
+  }
+
+  Future<void> decrementBy(int delta) async {
+    if (_currentCounter == null || delta == 0) return;
     try {
       final timestamp = DateTime.now();
       final logId = const Uuid().v7();
-      final newCount = _currentCounter!.currentCount - 1;
+      final newCount = _currentCounter!.currentCount - delta;
       final updatedCounter = _currentCounter!.copyWith(currentCount: newCount);
 
       _currentCounter = updatedCounter;
@@ -210,7 +218,7 @@ class CounterDetailCubit extends Cubit<CounterDetailState> {
         counterId: _counterId,
         timestamp: timestamp,
         actionType: CounterActionType.decrement,
-        delta: -1,
+        delta: -delta,
         resultingCount: newCount,
       ));
     } catch (e) {

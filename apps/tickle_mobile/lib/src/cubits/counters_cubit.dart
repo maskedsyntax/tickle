@@ -148,6 +148,36 @@ class CountersCubit extends Cubit<CountersState> {
     }
   }
 
+  Future<void> updateCounter({
+    required String id,
+    required String title,
+    String? emoji,
+    required String colorHex,
+    int? goalValue,
+  }) async {
+    try {
+      final counter = await _repository.getCounter(id);
+      if (counter != null) {
+        final updated = counter.copyWith(
+          title: title,
+          emoji: emoji,
+          colorHex: colorHex,
+          goalValue: goalValue,
+        );
+        await _repository.saveCounter(updated);
+
+        final activeIndex = _activeCounters.indexWhere((c) => c.id == id);
+        if (activeIndex != -1) {
+          _activeCounters[activeIndex] = updated;
+          _emitLoaded();
+        }
+      }
+    } catch (e) {
+      if (isClosed) return;
+      emit(CountersError(e.toString()));
+    }
+  }
+
   Future<void> archiveCounter(String id) async {
     try {
       final counter = await _repository.getCounter(id);
@@ -252,8 +282,16 @@ class CountersCubit extends Cubit<CountersState> {
     await _updateCounterValue(id, (val) => val + 1, CounterActionType.increment);
   }
 
+  Future<void> incrementCounterBy(String id, int delta) async {
+    await _updateCounterValue(id, (val) => val + delta, CounterActionType.increment);
+  }
+
   Future<void> decrementCounter(String id) async {
     await _updateCounterValue(id, (val) => val - 1, CounterActionType.decrement);
+  }
+
+  Future<void> decrementCounterBy(String id, int delta) async {
+    await _updateCounterValue(id, (val) => val - delta, CounterActionType.decrement);
   }
 
   Future<void> resetCounter(String id) async {

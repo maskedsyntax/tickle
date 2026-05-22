@@ -4,6 +4,8 @@ class BounceTap extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
+  final GestureLongPressStartCallback? onLongPressStart;
+  final GestureLongPressEndCallback? onLongPressEnd;
   final double scaleFactor;
   final Duration duration;
 
@@ -12,6 +14,8 @@ class BounceTap extends StatefulWidget {
     required this.child,
     this.onTap,
     this.onLongPress,
+    this.onLongPressStart,
+    this.onLongPressEnd,
     this.scaleFactor = 0.93,
     this.duration = const Duration(milliseconds: 100),
   });
@@ -48,20 +52,43 @@ class _BounceTapState extends State<BounceTap> with SingleTickerProviderStateMix
     super.dispose();
   }
 
+  bool _hasGestures() {
+    return widget.onTap != null ||
+        widget.onLongPress != null ||
+        widget.onLongPressStart != null ||
+        widget.onLongPressEnd != null;
+  }
+
   void _onTapDown(TapDownDetails details) {
-    if (widget.onTap != null || widget.onLongPress != null) {
+    if (_hasGestures()) {
       _controller.forward();
     }
   }
 
   void _onTapUp(TapUpDetails details) {
-    if (widget.onTap != null || widget.onLongPress != null) {
+    if (_hasGestures()) {
       _controller.reverse();
     }
   }
 
   void _onTapCancel() {
-    _controller.reverse();
+    if (_hasGestures()) {
+      _controller.reverse();
+    }
+  }
+  
+  void _onLongPressStart(LongPressStartDetails details) {
+    if (_hasGestures()) {
+      _controller.forward();
+    }
+    widget.onLongPressStart?.call(details);
+  }
+  
+  void _onLongPressEnd(LongPressEndDetails details) {
+    if (_hasGestures()) {
+      _controller.reverse();
+    }
+    widget.onLongPressEnd?.call(details);
   }
 
   @override
@@ -72,6 +99,8 @@ class _BounceTapState extends State<BounceTap> with SingleTickerProviderStateMix
       onTapCancel: _onTapCancel,
       onTap: widget.onTap,
       onLongPress: widget.onLongPress,
+      onLongPressStart: widget.onLongPressStart != null ? _onLongPressStart : null,
+      onLongPressEnd: widget.onLongPressEnd != null ? _onLongPressEnd : null,
       behavior: HitTestBehavior.opaque,
       child: AnimatedBuilder(
         animation: _scaleAnimation,

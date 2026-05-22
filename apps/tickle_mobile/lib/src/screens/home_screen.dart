@@ -6,6 +6,8 @@ import '../cubits/counters_cubit.dart';
 import '../cubits/settings_cubit.dart';
 import '../theme/theme.dart';
 import '../widgets/bounce_tap.dart';
+import '../widgets/rapid_count_button.dart';
+import '../widgets/counter_form_sheet.dart';
 import '../utils/haptic_feedback.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'counter_detail_screen.dart';
@@ -180,200 +182,28 @@ class _HomeScreenState extends State<HomeScreen> {
     String hapticLevel, {
     bool isReorderable = false,
   }) {
-    final preset = AppColors.getPresetByHex(counter.colorHex);
-    final cardColor = Theme.of(context).cardColor;
-    final borderThemeColor = Theme.of(context).dividerColor;
-
-    final progress = counter.goalValue != null && counter.goalValue! > 0
-        ? (counter.currentCount / counter.goalValue!).clamp(0.0, 1.0)
-        : 0.0;
-
-    Widget cardContent = Container(
-      padding: const EdgeInsets.all(18.0),
-      color: cardColor,
-      child: Row(
-        children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              if (counter.goalValue != null)
-                SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: CircularProgressIndicator(
-                    value: progress,
-                    strokeWidth: 3,
-                    color: preset.primary,
-                    backgroundColor: preset.primary.withOpacity(0.1),
-                  ),
-                ),
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: preset.primary.withOpacity(0.12),
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  counter.emoji ?? '🔢',
-                  style: const TextStyle(fontSize: 22),
-                ),
-              ),
-            ],
+    return _CounterCard(
+      key: ValueKey('card-${counter.id}'),
+      counter: counter,
+      hapticLevel: hapticLevel,
+      isReorderable: isReorderable,
+      onOpenDetails: () {
+        HapticsHelper.selectionClick(hapticLevel);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => CounterDetailScreen(counterId: counter.id),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  counter.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: -0.2,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (counter.goalValue != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    'Goal: ${counter.currentCount} / ${counter.goalValue}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: progress >= 1.0 ? preset.secondary : Theme.of(context).textTheme.bodyMedium?.color,
-                      fontWeight: progress >= 1.0 ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '${counter.currentCount}',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: preset.primary,
-                    ),
-                  ),
-                  if (counter.goalValue != null)
-                    Text(
-                      '${(progress * 100).round()}%',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: preset.primary.withOpacity(0.5),
-                      ),
-                    ),
-                ],
-              ),
-              if (isReorderable) ...[
-                const SizedBox(width: 12),
-                const Icon(Icons.menu_rounded, color: Colors.grey),
-              ] else ...[
-                const SizedBox(width: 12),
-                BounceTap(
-                  onTap: () {
-                    HapticsHelper.trigger(hapticLevel);
-                    context.read<CountersCubit>().incrementCounter(counter.id);
-                  },
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: preset.primary.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Icon(
-                      Icons.add_rounded,
-                      color: preset.primary,
-                      size: 26,
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ],
-      ),
-    );
-
-    if (isReorderable) {
-      return Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), border: Border.all(color: borderThemeColor, width: 1.0), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))]), child: ClipRRect(borderRadius: BorderRadius.circular(20), child: cardContent));
-    }
-
-    final goalSuffix = counter.goalValue != null
-        ? ', goal ${counter.currentCount} of ${counter.goalValue}'
-        : '';
-
-    final interactiveCard = Semantics(
-      button: true,
-      label: '${counter.title}, count ${counter.currentCount}$goalSuffix',
-      hint: 'Tap to view details, swipe for options',
-      excludeSemantics: true,
-      child: BounceTap(
-        onTap: () {
-          HapticsHelper.selectionClick(hapticLevel);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => CounterDetailScreen(counterId: counter.id),
-            ),
-          );
-        },
-        onLongPress: () {
-          HapticsHelper.selectionClick(hapticLevel);
-          _showContextMenu(context, counter, hapticLevel);
-        },
-        child: cardContent,
-      ),
-    );
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderThemeColor, width: 1.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Slidable(
-          key: ValueKey(counter.id),
-          endActionPane: ActionPane(
-            motion: const DrawerMotion(),
-            extentRatio: 0.25,
-            children: [
-              SlidableAction(
-                onPressed: (context) {
-                  HapticsHelper.selectionClick(hapticLevel);
-                  _showContextMenu(context, counter, hapticLevel);
-                },
-                backgroundColor: Theme.of(context).brightness == Brightness.dark 
-                    ? const Color(0xFF2C2C2E) 
-                    : const Color(0xFFE5E5EA),
-                foregroundColor: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
-                icon: Icons.more_horiz_rounded,
-                label: 'Options',
-              ),
-            ],
-          ),
-          child: interactiveCard,
-        ),
-      ),
+        );
+      },
+      onLongPressOptions: () {
+        HapticsHelper.selectionClick(hapticLevel);
+        _showContextMenu(context, counter, hapticLevel);
+      },
+      onSlideOptions: () {
+        HapticsHelper.selectionClick(hapticLevel);
+        _showContextMenu(context, counter, hapticLevel);
+      },
     );
   }
 
@@ -406,6 +236,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
+                _buildMenuOption(
+                  context,
+                  icon: Icons.edit_rounded,
+                  label: 'Edit Counter',
+                  color: Colors.blue,
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showEditCounterSheet(context, counter);
+                  },
+                ),
                 _buildMenuOption(
                   context,
                   icon: Icons.copy_rounded,
@@ -510,264 +350,279 @@ class _HomeScreenState extends State<HomeScreen> {
       useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return const AddCounterSheet();
+        return const CounterFormSheet();
+      },
+    );
+  }
+
+  void _showEditCounterSheet(BuildContext context, Counter counter) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return CounterFormSheet(initialCounter: counter);
       },
     );
   }
 }
 
-class AddCounterSheet extends StatefulWidget {
-  const AddCounterSheet({super.key});
+class _CounterCard extends StatefulWidget {
+  final Counter counter;
+  final String hapticLevel;
+  final bool isReorderable;
+  final VoidCallback onOpenDetails;
+  final VoidCallback onLongPressOptions;
+  final VoidCallback onSlideOptions;
+
+  const _CounterCard({
+    super.key,
+    required this.counter,
+    required this.hapticLevel,
+    required this.isReorderable,
+    required this.onOpenDetails,
+    required this.onLongPressOptions,
+    required this.onSlideOptions,
+  });
 
   @override
-  State<AddCounterSheet> createState() => _AddCounterSheetState();
+  State<_CounterCard> createState() => _CounterCardState();
 }
 
-class _AddCounterSheetState extends State<AddCounterSheet> {
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _goalController = TextEditingController();
-  
-  String _selectedEmoji = '💧';
-  String _selectedColorHex = AppColors.presets[0].hex;
-  bool _hasGoal = false;
-
-  final List<String> _emojiPresets = ['💧', '🏃', '📚', '🧘', '🍎', '☕', '💊', '🔑', '🥦', '💪', '🚿', '💤', '📝', '🤝'];
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _goalController.dispose();
-    super.dispose();
-  }
+class _CounterCardState extends State<_CounterCard> {
+  int _rapidDelta = 0;
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      padding: EdgeInsets.only(
-        top: 20,
-        left: 20,
-        right: 20,
-        bottom: 20 + bottomInset,
-      ),
-      child: SafeArea(
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
+    final counter = widget.counter;
+    final preset = AppColors.getPresetByHex(counter.colorHex);
+    final theme = Theme.of(context);
+    final cardColor = theme.cardColor;
+    final borderThemeColor = theme.dividerColor;
+
+    final optimisticCount = counter.currentCount + _rapidDelta;
+    final isRapid = _rapidDelta != 0;
+
+    final progress = counter.goalValue != null && counter.goalValue! > 0
+        ? (optimisticCount / counter.goalValue!).clamp(0.0, 1.0)
+        : 0.0;
+
+    final Widget cardContent = Container(
+      padding: const EdgeInsets.all(18.0),
+      color: cardColor,
+      child: Row(
+        children: [
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              if (counter.goalValue != null)
+                SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: CircularProgressIndicator(
+                    value: progress,
+                    strokeWidth: 3,
+                    color: preset.primary,
+                    backgroundColor: preset.primary.withOpacity(0.1),
+                  ),
+                ),
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: preset.primary.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  counter.emoji ?? '🔢',
+                  style: const TextStyle(fontSize: 22),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 16),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'New Counter',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                // Title Field
-                TextFormField(
-                  controller: _titleController,
-                  autofocus: true,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    labelText: 'Title',
-                    hintText: 'e.g. Water Intake, Pushups',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
+                Text(
+                  counter.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter a title';
-                    }
-                    return null;
-                  },
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 20),
-                // Emoji Grid
-                const Text(
-                  'Select Emoji / Icon',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 48,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _emojiPresets.length,
-                    itemBuilder: (context, index) {
-                      final emoji = _emojiPresets[index];
-                      final isSelected = _selectedEmoji == emoji;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedEmoji = emoji;
-                          });
-                        },
-                        child: Container(
-                          width: 44,
-                          height: 44,
-                          margin: const EdgeInsets.only(right: 8),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? Theme.of(context).primaryColor.withOpacity(0.15)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: isSelected
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.grey.withOpacity(0.2),
-                              width: 1.5,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            emoji,
-                            style: const TextStyle(fontSize: 22),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Color Presets
-                const Text(
-                  'Select Color Theme',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 48,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: AppColors.presets.length,
-                    itemBuilder: (context, index) {
-                      final preset = AppColors.presets[index];
-                      final isSelected = _selectedColorHex == preset.hex;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedColorHex = preset.hex;
-                          });
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          margin: const EdgeInsets.only(right: 12),
-                          decoration: BoxDecoration(
-                            color: preset.primary,
-                            shape: BoxShape.circle,
-                            border: isSelected
-                                ? Border.all(
-                                    color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
-                                    width: 3,
-                                  )
-                                : null,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Optional Goal Section
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Set a Daily/Session Goal',
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                if (counter.goalValue != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Goal: $optimisticCount / ${counter.goalValue}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: progress >= 1.0
+                          ? preset.secondary
+                          : theme.textTheme.bodyMedium?.color,
+                      fontWeight: progress >= 1.0
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
-                    Switch.adaptive(
-                      value: _hasGoal,
-                      onChanged: (val) {
-                        setState(() {
-                          _hasGoal = val;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                if (_hasGoal) ...[
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _goalController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: InputDecoration(
-                      labelText: 'Goal Value',
-                      hintText: 'e.g. 10',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (_hasGoal) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a goal value';
-                        }
-                        final num = int.tryParse(value);
-                        if (num == null || num <= 0) {
-                          return 'Please enter a number greater than 0';
-                        }
-                      }
-                      return null;
-                    },
                   ),
                 ],
-                const SizedBox(height: 32),
-                // Create Button
-                BounceTap(
+              ],
+            ),
+          ),
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '$optimisticCount',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: preset.primary,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                  if (isRapid)
+                    Text(
+                      _rapidDelta > 0 ? '+$_rapidDelta' : '$_rapidDelta',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: preset.primary.withOpacity(0.75),
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    )
+                  else if (counter.goalValue != null)
+                    Text(
+                      '${(progress * 100).round()}%',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: preset.primary.withOpacity(0.5),
+                      ),
+                    ),
+                ],
+              ),
+              if (widget.isReorderable) ...[
+                const SizedBox(width: 12),
+                const Icon(Icons.menu_rounded, color: Colors.grey),
+              ] else ...[
+                const SizedBox(width: 12),
+                RapidCountButton(
+                  hapticLevel: widget.hapticLevel,
                   onTap: () {
-                    if (_formKey.currentState!.validate()) {
-                      final title = _titleController.text.trim();
-                      final goalVal = _hasGoal ? int.tryParse(_goalController.text) : null;
-                      
-                      context.read<CountersCubit>().createCounter(
-                            title: title,
-                            emoji: _selectedEmoji,
-                            colorHex: _selectedColorHex,
-                            goalValue: goalVal,
-                          );
-                      
-                      Navigator.pop(context);
-                    }
+                    HapticsHelper.trigger(widget.hapticLevel);
+                    context
+                        .read<CountersCubit>()
+                        .incrementCounter(counter.id);
+                  },
+                  onTick: (delta) {
+                    setState(() {
+                      _rapidDelta = delta;
+                    });
+                  },
+                  onCommit: (delta) {
+                    context
+                        .read<CountersCubit>()
+                        .incrementCounterBy(counter.id, delta);
                   },
                   child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(16),
+                      color: preset.primary.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'Create Counter',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                    child: Icon(
+                      Icons.add_rounded,
+                      color: preset.primary,
+                      size: 26,
                     ),
                   ),
                 ),
               ],
-            ),
+            ],
           ),
+        ],
+      ),
+    );
+
+    if (widget.isReorderable) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: borderThemeColor, width: 1.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: cardContent,
+        ),
+      );
+    }
+
+    final goalSuffix = counter.goalValue != null
+        ? ', goal $optimisticCount of ${counter.goalValue}'
+        : '';
+
+    final interactiveCard = Semantics(
+      button: true,
+      label: '${counter.title}, count $optimisticCount$goalSuffix',
+      hint: 'Tap to view details, swipe for options',
+      excludeSemantics: true,
+      child: BounceTap(
+        onTap: widget.onOpenDetails,
+        onLongPress: widget.onLongPressOptions,
+        child: cardContent,
+      ),
+    );
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: borderThemeColor, width: 1.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Slidable(
+          key: ValueKey(counter.id),
+          endActionPane: ActionPane(
+            motion: const DrawerMotion(),
+            extentRatio: 0.25,
+            children: [
+              SlidableAction(
+                onPressed: (_) => widget.onSlideOptions(),
+                backgroundColor: theme.brightness == Brightness.dark
+                    ? const Color(0xFF2C2C2E)
+                    : const Color(0xFFE5E5EA),
+                foregroundColor:
+                    theme.textTheme.bodyLarge?.color ?? Colors.black,
+                icon: Icons.more_horiz_rounded,
+                label: 'Options',
+              ),
+            ],
+          ),
+          child: interactiveCard,
         ),
       ),
     );
