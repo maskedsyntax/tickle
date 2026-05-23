@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tickle_core/tickle_core.dart';
 import '../cubits/counters_cubit.dart';
 import '../cubits/settings_cubit.dart';
 import '../theme/theme.dart';
 import '../widgets/bounce_tap.dart';
+import '../widgets/ios_sliver_app_bar.dart';
 import '../widgets/rapid_count_button.dart';
 import '../widgets/counter_form_sheet.dart';
 import '../utils/haptic_feedback.dart';
@@ -33,11 +33,12 @@ class _HomeScreenState extends State<HomeScreen> {
               parent: BouncingScrollPhysics(),
             ),
             slivers: [
-              SliverAppBar.medium(
-                title: const Text('Tickle'),
+              IOSSliverAppBar(
+                title: 'Tickle',
                 actions: [
                   IconButton(
                     icon: Icon(_isReordering ? Icons.done : Icons.sort_rounded),
+                    tooltip: _isReordering ? 'Done reordering' : 'Reorder counters',
                     onPressed: () {
                       HapticsHelper.selectionClick(hapticLevel);
                       setState(() {
@@ -47,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline_rounded, size: 28),
+                    tooltip: 'Create counter',
                     onPressed: () {
                       HapticsHelper.selectionClick(hapticLevel);
                       _showAddCounterSheet(context);

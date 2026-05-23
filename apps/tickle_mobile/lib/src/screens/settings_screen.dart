@@ -10,6 +10,7 @@ import 'package:tickle_core/tickle_core.dart';
 import '../cubits/settings_cubit.dart';
 import '../cubits/counters_cubit.dart';
 import '../utils/haptic_feedback.dart';
+import '../widgets/ios_sliver_app_bar.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -26,9 +27,7 @@ class SettingsScreen extends StatelessWidget {
           parent: BouncingScrollPhysics(),
         ),
         slivers: [
-          const SliverAppBar.medium(
-            title: Text('Settings'),
-          ),
+          const IOSSliverAppBar(title: 'Settings'),
           SliverPadding(
             padding: const EdgeInsets.all(20.0),
             sliver: SliverList(

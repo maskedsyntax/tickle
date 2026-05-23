@@ -9,6 +9,7 @@ import '../cubits/counter_detail_cubit.dart';
 import '../cubits/settings_cubit.dart';
 import '../theme/theme.dart';
 import '../widgets/bounce_tap.dart';
+import '../widgets/ios_sliver_app_bar.dart';
 import '../widgets/rapid_count_button.dart';
 import '../widgets/counter_form_sheet.dart';
 import '../utils/haptic_feedback.dart';
@@ -115,119 +116,123 @@ class _CounterDetailViewState extends State<CounterDetailView> {
           final hapticLevel = settingsCubit.state.hapticLevel;
 
           return Scaffold(
-            appBar: AppBar(
-              title: Text(counter.title),
-              actions: [
-                Builder(
-                  builder: (context) {
-                    final platform = Theme.of(context).platform;
-                    final isApple = platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
+            body: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              slivers: [
+                IOSSliverAppBar(
+                  title: counter.title,
+                  actions: [
+                    Builder(
+                      builder: (context) {
+                        final platform = Theme.of(context).platform;
+                        final isApple = platform == TargetPlatform.iOS ||
+                            platform == TargetPlatform.macOS;
 
-                    if (isApple) {
-                      return PullDownButton(
-                        itemBuilder: (context) => [
-                          PullDownMenuItem(
-                            title: 'Edit Counter',
-                            icon: CupertinoIcons.pencil,
-                            onTap: () {
+                        if (isApple) {
+                          return PullDownButton(
+                            itemBuilder: (context) => [
+                              PullDownMenuItem(
+                                title: 'Edit Counter',
+                                icon: CupertinoIcons.pencil,
+                                onTap: () {
+                                  HapticsHelper.selectionClick(hapticLevel);
+                                  _showEditCounterSheet(context, counter);
+                                },
+                              ),
+                              PullDownMenuItem(
+                                title: 'Reset Count',
+                                icon: CupertinoIcons.arrow_counterclockwise,
+                                onTap: () {
+                                  HapticsHelper.selectionClick(hapticLevel);
+                                  context.read<CounterDetailCubit>().reset();
+                                },
+                              ),
+                              PullDownMenuItem(
+                                title: 'Clear History Logs',
+                                icon: CupertinoIcons.delete,
+                                isDestructive: true,
+                                onTap: () {
+                                  HapticsHelper.selectionClick(hapticLevel);
+                                  _confirmClearHistory(context);
+                                },
+                              ),
+                            ],
+                            buttonBuilder: (context, showMenu) => IconButton(
+                              icon: const Icon(CupertinoIcons.ellipsis_circle),
+                              onPressed: showMenu,
+                            ),
+                          );
+                        }
+
+                        return PopupMenuButton<String>(
+                          icon: const Icon(Icons.more_vert_rounded),
+                          onSelected: (val) {
+                            if (val == 'edit') {
                               HapticsHelper.selectionClick(hapticLevel);
                               _showEditCounterSheet(context, counter);
-                            },
-                          ),
-                          PullDownMenuItem(
-                            title: 'Reset Count',
-                            icon: CupertinoIcons.arrow_counterclockwise,
-                            onTap: () {
+                            } else if (val == 'reset') {
                               HapticsHelper.selectionClick(hapticLevel);
                               context.read<CounterDetailCubit>().reset();
-                            },
-                          ),
-                          PullDownMenuItem(
-                            title: 'Clear History Logs',
-                            icon: CupertinoIcons.delete,
-                            isDestructive: true,
-                            onTap: () {
+                            } else if (val == 'clear_history') {
                               HapticsHelper.selectionClick(hapticLevel);
                               _confirmClearHistory(context);
-                            },
-                          ),
-                        ],
-                        buttonBuilder: (context, showMenu) => IconButton(
-                          icon: const Icon(CupertinoIcons.ellipsis_circle),
-                          onPressed: showMenu,
-                        ),
-                      );
-                    }
-
-                    return PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert_rounded),
-                      onSelected: (val) {
-                        if (val == 'edit') {
-                          HapticsHelper.selectionClick(hapticLevel);
-                          _showEditCounterSheet(context, counter);
-                        } else if (val == 'reset') {
-                          HapticsHelper.selectionClick(hapticLevel);
-                          context.read<CounterDetailCubit>().reset();
-                        } else if (val == 'clear_history') {
-                          HapticsHelper.selectionClick(hapticLevel);
-                          _confirmClearHistory(context);
-                        }
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Text('Edit Counter'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'reset',
+                              child: Text('Reset Count'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'clear_history',
+                              child: Text(
+                                'Clear History Logs',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        );
                       },
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'edit',
-                          child: Text('Edit Counter'),
-                        ),
-                        const PopupMenuItem(
-                          value: 'reset',
-                          child: Text('Reset Count'),
-                        ),
-                        const PopupMenuItem(
-                          value: 'clear_history',
-                          child: Text(
-                            'Clear History Logs',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ),
-            body: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _HeroCountCard(
-                      counter: counter,
-                      optimisticCount: optimisticCount,
-                      preset: preset,
-                      hasGoal: hasGoal,
-                      progress: progress,
-                      hapticLevel: hapticLevel,
                     ),
-                    const SizedBox(height: 20),
-                    _Controls(
-                      preset: preset, 
-                      hapticLevel: hapticLevel,
-                      onTickDecrement: (delta) => setState(() => _rapidDelta = -delta),
-                      onTickIncrement: (delta) => setState(() => _rapidDelta = delta),
-                    ),
-                    const SizedBox(height: 28),
-                    _StreaksSection(stats: stats, preset: preset),
-                    const SizedBox(height: 28),
-                    _HeatmapSection(heatmapData: stats.heatmapData, preset: preset),
-                    const SizedBox(height: 28),
-                    _AnalyticsSection(logs: logs, preset: preset),
-                    const SizedBox(height: 28),
-                    _HistorySection(logs: logs),
                   ],
                 ),
-              ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      _HeroCountCard(
+                        counter: counter,
+                        optimisticCount: optimisticCount,
+                        preset: preset,
+                        hasGoal: hasGoal,
+                        progress: progress,
+                        hapticLevel: hapticLevel,
+                      ),
+                      const SizedBox(height: 20),
+                      _Controls(
+                        preset: preset,
+                        hapticLevel: hapticLevel,
+                        onTickDecrement: (delta) => setState(() => _rapidDelta = -delta),
+                        onTickIncrement: (delta) => setState(() => _rapidDelta = delta),
+                      ),
+                      const SizedBox(height: 28),
+                      _StreaksSection(stats: stats, preset: preset),
+                      const SizedBox(height: 28),
+                      _HeatmapSection(heatmapData: stats.heatmapData, preset: preset),
+                      const SizedBox(height: 28),
+                      _AnalyticsSection(logs: logs, preset: preset),
+                      const SizedBox(height: 28),
+                      _HistorySection(logs: logs),
+                    ]),
+                  ),
+                ),
+              ],
             ),
           );
         }
