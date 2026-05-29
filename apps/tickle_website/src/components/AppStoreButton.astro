@@ -1,0 +1,93 @@
+---
+interface Props {
+  variant?: 'dark' | 'light';
+  class?: string;
+}
+
+const {
+  variant = 'dark',
+  class: className = '',
+} = Astro.props;
+
+const href = 'https://apps.apple.com/us/app/tickle-count-anything/id6772946890';
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class:list={['app-store-btn', `app-store-btn--${variant}`, className]}
+>
+  <svg class="app-store-btn__icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+  </svg>
+  <span class="app-store-btn__text">
+    <span class="app-store-btn__label">Download on the</span>
+    <span class="app-store-btn__store">App Store</span>
+  </span>
+</a>
+
+<style>
+  .app-store-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    line-height: 1.1;
+    text-decoration: none;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .app-store-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .app-store-btn--dark {
+    background: #000;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .app-store-btn--dark:hover {
+    background: #1a1a1a;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .app-store-btn--light {
+    background: #fff;
+    color: #000;
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.15);
+  }
+
+  .app-store-btn--light:hover {
+    background: #f5f5f5;
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.25);
+  }
+
+  .app-store-btn__icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
+  .app-store-btn__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .app-store-btn__label {
+    font-size: 0.6875rem;
+    letter-spacing: 0.02em;
+    opacity: 0.9;
+  }
+
+  .app-store-btn__store {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+</style>

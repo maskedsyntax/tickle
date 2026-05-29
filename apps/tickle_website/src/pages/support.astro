@@ -1,0 +1,115 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="Support - Tickle" description="Support for Tickle.">
+  <div class="legal-container container">
+    <div class="legal-hero">
+      <p class="eyebrow">Help center</p>
+      <h1>Support</h1>
+      <p class="lead">Need help with Tickle? Send details about the issue, your device, operating system version, and the app version if available.</p>
+      <a href="mailto:aftaab@aftaab.dev" class="btn btn-primary" style="margin-top: 24px;">Email support</a>
+    </div>
+
+    <div class="support-grid">
+      <article class="support-card">
+        <h2>Data and backups</h2>
+        <p>Use export to create a backup file of counters and logs. Keep important backups somewhere you control before deleting the app or switching devices.</p>
+      </article>
+      <article class="support-card">
+        <h2>Privacy questions</h2>
+        <p>Tickle is built to work locally for core features. Read the privacy policy for current data handling details.</p>
+        <a href="/privacy.html" class="text-accent">View privacy policy</a>
+      </article>
+      <article class="support-card">
+        <h2>Bug reports</h2>
+        <p>Include what you expected, what happened, and steps that reproduce the problem. Screenshots are helpful when they do not include sensitive information.</p>
+      </article>
+      <article class="support-card">
+        <h2>Feature requests</h2>
+        <p>Tell us what you are trying to count and where the current workflow slows you down. Practical examples help shape future updates.</p>
+      </article>
+      <article class="support-card">
+        <h2>Support development</h2>
+        <p>If Tickle is useful to you, you can leave an optional tip through GitHub Sponsors. Donations are not required for support.</p>
+        <a href="https://github.com/sponsors/maskedsyntax" target="_blank" rel="noopener" class="text-accent">Sponsor on GitHub</a>
+      </article>
+    </div>
+  </div>
+</MainLayout>
+
+<style>
+  .legal-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 80px 24px;
+  }
+  
+  .legal-hero {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+  
+  .eyebrow {
+    color: var(--accent-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  
+  .legal-hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+  }
+  
+  .lead {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  
+  .support-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+  }
+  
+  .support-card {
+    background: var(--card-bg);
+    padding: 32px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+  }
+  
+  .support-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .support-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+  
+  .support-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  
+  .text-accent {
+    color: var(--accent-color);
+    font-weight: 500;
+  }
+  
+  .text-accent:hover {
+    text-decoration: underline;
+  }
+</style>

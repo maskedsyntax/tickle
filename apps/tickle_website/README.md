@@ -1,27 +1,46 @@
-# Tickle Website
-
-Static, dependency-free marketing and policy site for Tickle.
-
-## Pages
-
-- `index.html` - Product landing page
-- `privacy.html` - Privacy policy URL for app store submission
-- `terms.html` - Terms of use
-- `support.html` - Support URL for app store submission
-
-## Local Preview
-
-Open `index.html` directly in a browser, or serve the folder:
+# Astro Starter Kit: Basics
 
 ```sh
-python3 -m http.server 4173 --directory apps/tickle_website
+npm create astro@latest -- --template basics
 ```
 
-## Before Publishing
+> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
-Replace the placeholder contact details in the policy and support pages:
+## 🚀 Project Structure
 
-- `support@maskedsyntax.com`
-- `MaskedSyntax`
-- `https://tickle.maskedsyntax.com`
+Inside of your Astro project, you'll see the following folders and files:
 
+```text
+/
+├── public/
+│   └── favicon.svg
+├── src
+│   ├── assets
+│   │   └── astro.svg
+│   ├── components
+│   │   └── Welcome.astro
+│   ├── layouts
+│   │   └── Layout.astro
+│   └── pages
+│       └── index.astro
+└── package.json
+```
+
+To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+
+## 🧞 Commands
+
+All commands are run from the root of the project, from a terminal:
+
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
+
+## 👀 Want to learn more?
+
+Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

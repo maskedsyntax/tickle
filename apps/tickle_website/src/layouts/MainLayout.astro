@@ -1,0 +1,134 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Tickle is a minimal yet powerful counter application." } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/favicon.ico" />
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="logo" style="display: flex; align-items: center; gap: 8px;">
+        <img src="/assets/tickle.png" alt="Tickle Logo" width="32" height="32" style="border-radius: 8px;" />
+        Tickle
+      </a>
+      <nav class="nav">
+        <a href="/#features">Features</a>
+        <a href="https://apps.apple.com/us/app/tickle-count-anything/id6772946890" target="_blank" class="btn btn-primary">Get the App</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-logo">Tickle</div>
+      <div class="footer-links">
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/support.html">Support</a>
+      </div>
+      <div class="footer-copy">
+        &copy; {new Date().getFullYear()} Tickle. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    /* Header */
+    .header {
+      padding: 24px 0;
+      position: sticky;
+      top: 0;
+      background: rgba(247, 249, 250, 0.8);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo, .footer-logo {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+    
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      font-weight: 500;
+    }
+    
+    .nav a:not(.btn):hover {
+      color: var(--accent-color);
+    }
+
+    /* Footer */
+    .footer {
+      background: #fff;
+      padding: 48px 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      margin-top: 80px;
+    }
+    
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .footer-links a:hover {
+      color: var(--accent-color);
+    }
+    
+    .footer-copy {
+      font-size: 0.875rem;
+      color: rgba(100, 100, 115, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .nav gap {
+        gap: 16px;
+      }
+      
+      .nav a:not(.btn) {
+        display: none;
+      }
+    }
+  </style>
+</body>
+</html>

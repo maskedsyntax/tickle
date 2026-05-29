@@ -1,0 +1,114 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="Terms of Use - Tickle" description="Terms of use for Tickle.">
+  <div class="legal-container container">
+    <div class="legal-hero">
+      <p class="eyebrow">Tickle</p>
+      <h1>Terms of Use</h1>
+      <p class="legal-date">Last updated: May 22, 2026</p>
+    </div>
+
+    <div class="legal-content">
+      <section>
+        <h2>Acceptance</h2>
+        <p>By downloading, installing, or using Tickle, you agree to these terms. If you do not agree, do not use the app.</p>
+      </section>
+
+      <section>
+        <h2>Use of the App</h2>
+        <p>Tickle is provided to help you count and track repeated actions or events. You are responsible for how you use the app and for the information you enter into it.</p>
+      </section>
+
+      <section>
+        <h2>No Professional Advice</h2>
+        <p>Tickle is a general utility app. It is not medical, health, fitness, financial, legal, or professional advice. Do not rely on Tickle as the only record for emergencies, critical decisions, or regulated recordkeeping.</p>
+      </section>
+
+      <section>
+        <h2>Your Data</h2>
+        <p>You retain responsibility for counters, logs, backups, and other content you create in the app. You should export or back up important data before deleting the app, replacing your device, or performing system resets.</p>
+      </section>
+
+      <section>
+        <h2>Availability and Changes</h2>
+        <p>We may update, improve, suspend, or discontinue app features at any time. We may also update these terms when the app or legal requirements change.</p>
+      </section>
+
+      <section>
+        <h2>Disclaimer</h2>
+        <p>Tickle is provided "as is" and "as available" without warranties of any kind to the maximum extent permitted by law.</p>
+      </section>
+
+      <section>
+        <h2>Limitation of Liability</h2>
+        <p>To the maximum extent permitted by law, MaskedSyntax will not be liable for indirect, incidental, special, consequential, or punitive damages, or for loss of data, profits, or business arising from your use of Tickle.</p>
+      </section>
+
+      <section>
+        <h2>Contact</h2>
+        <p>Questions about these terms can be sent to <a href="mailto:aftaab@aftaab.dev" class="text-accent">aftaab@aftaab.dev</a>.</p>
+      </section>
+    </div>
+  </div>
+</MainLayout>
+
+<style>
+  .legal-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 24px;
+  }
+  
+  .legal-hero {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+  
+  .eyebrow {
+    color: var(--accent-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  
+  .legal-hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+  
+  .legal-date {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+  
+  .legal-content section {
+    margin-bottom: 48px;
+  }
+  
+  .legal-content h2 {
+    font-size: 1.75rem;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+  
+  .legal-content p {
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  
+  .text-accent {
+    color: var(--accent-color);
+    font-weight: 500;
+  }
+  
+  .text-accent:hover {
+    text-decoration: underline;
+  }
+</style>
