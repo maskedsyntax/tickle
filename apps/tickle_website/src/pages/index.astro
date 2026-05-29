@@ -1,9 +1,39 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import AppStoreButton from '../components/AppStoreButton.astro';
+import KofiSection from '../components/KofiSection.astro';
+import { SITE, absoluteUrl } from '../config/site';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      name: SITE.name,
+      url: SITE.url,
+      description: SITE.description,
+    },
+    {
+      '@type': 'SoftwareApplication',
+      name: SITE.name,
+      operatingSystem: 'iOS',
+      applicationCategory: 'LifestyleApplication',
+      description: SITE.description,
+      url: SITE.url,
+      downloadUrl: SITE.appStoreUrl,
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+      image: absoluteUrl(SITE.ogImage),
+    },
+  ],
+};
 ---
 
-<MainLayout title="Tickle — Count what matters. Build better habits.">
+<MainLayout>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(structuredData)} />
   <section class="hero container">
     <div class="hero-content animate-up">
       <h1 class="hero-title">
@@ -74,6 +104,8 @@ import AppStoreButton from '../components/AppStoreButton.astro';
       </div>
     </div>
   </section>
+
+  <KofiSection />
 
   <section class="cta container reveal">
     <div class="cta-box">
@@ -257,7 +289,7 @@ import AppStoreButton from '../components/AppStoreButton.astro';
 
     /* CTA Section */
     .cta {
-      padding: 80px 24px 120px;
+      padding: 0 24px 120px;
     }
     
     .cta-box {

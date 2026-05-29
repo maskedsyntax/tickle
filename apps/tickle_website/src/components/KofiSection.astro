@@ -1,0 +1,124 @@
+---
+import { SITE } from '../config/site';
+---
+
+<section class="kofi-section container reveal">
+  <div class="kofi-box">
+    <div class="kofi-icon" aria-hidden="true">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 8h12v8a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M18 10h1.5a1.5 1.5 0 0 1 0 3H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M8 5c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v1H8V5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M9 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+      </svg>
+    </div>
+    <p class="kofi-eyebrow">Support development</p>
+    <h2>Enjoying Tickle?</h2>
+    <p class="kofi-lead">
+      Tickle is built and maintained by an indie developer. If the app is useful to you,
+      buying a coffee helps keep it improving — completely optional, no pressure.
+    </p>
+    <a
+      href={SITE.kofiUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="btn btn-kofi"
+    >
+      Buy me a coffee
+    </a>
+    <p class="kofi-alt">
+      Or <a href="https://github.com/sponsors/maskedsyntax" target="_blank" rel="noopener noreferrer">sponsor on GitHub</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .kofi-section {
+    padding: 64px 24px 80px;
+  }
+
+  .kofi-box {
+    background: var(--card-bg);
+    border-radius: 32px;
+    padding: 56px 40px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(255, 94, 108, 0.1);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .kofi-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 94, 108, 0.08);
+    color: var(--accent-color);
+    margin-bottom: 24px;
+  }
+
+  .kofi-eyebrow {
+    color: var(--accent-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.875rem;
+    margin-bottom: 12px;
+  }
+
+  .kofi-box h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 16px;
+  }
+
+  .kofi-lead {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto 32px;
+  }
+
+  .btn-kofi {
+    background-color: var(--accent-color);
+    color: #fff;
+    padding: 14px 32px;
+    font-size: 1.0625rem;
+  }
+
+  .btn-kofi:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 94, 108, 0.3);
+  }
+
+  .kofi-alt {
+    margin-top: 20px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .kofi-alt a {
+    color: var(--accent-color);
+    font-weight: 500;
+  }
+
+  .kofi-alt a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .kofi-box {
+      padding: 40px 24px;
+    }
+
+    .kofi-box h2 {
+      font-size: 1.75rem;
+    }
+  }
+</style>

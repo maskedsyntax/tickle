@@ -1,8 +1,13 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import KofiSection from '../components/KofiSection.astro';
 ---
 
-<MainLayout title="Support - Tickle" description="Support for Tickle.">
+<MainLayout
+  title="Support — Tickle"
+  description="Get help with Tickle. Find answers about the habit counter app, contact support, or report an issue."
+  canonical="https://tickle.maskedsyntax.com/support.html"
+>
   <div class="legal-container container">
     <div class="legal-hero">
       <p class="eyebrow">Help center</p>
@@ -29,13 +34,10 @@ import MainLayout from '../layouts/MainLayout.astro';
         <h2>Feature requests</h2>
         <p>Tell us what you are trying to count and where the current workflow slows you down. Practical examples help shape future updates.</p>
       </article>
-      <article class="support-card">
-        <h2>Support development</h2>
-        <p>If Tickle is useful to you, you can leave an optional tip through GitHub Sponsors. Donations are not required for support.</p>
-        <a href="https://github.com/sponsors/maskedsyntax" target="_blank" rel="noopener" class="text-accent">Sponsor on GitHub</a>
-      </article>
     </div>
   </div>
+
+  <KofiSection />
 </MainLayout>
 
 <style>
