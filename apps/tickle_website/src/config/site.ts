@@ -8,6 +8,7 @@ export const SITE = {
   locale: 'en_US',
   twitterHandle: '@maskedsyntax',
   appStoreUrl: 'https://apps.apple.com/us/app/tickle-count-anything/id6772946890',
+  appStoreId: '6772946890',
   kofiUrl: 'https://ko-fi.com/aftaabsiddiqui',
   ogImage: '/og-image.jpg',
   themeColor: '#7b5ea7',
