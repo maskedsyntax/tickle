@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 import { SITE, absoluteUrl, pageCanonical } from '../config/site';
 
 interface Props {
@@ -65,6 +66,8 @@ const ogImageUrl = absoluteUrl(ogImage);
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={ogImageUrl} />
   <meta name="twitter:image:alt" content={`${SITE.name} — ${SITE.tagline}`} />
+
+  <GoogleAnalytics />
 
   <slot name="head" />
 </head>

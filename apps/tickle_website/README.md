@@ -1,3 +1,18 @@
+# Tickle website
+
+Static marketing site for Tickle, built with Astro and deployed to GitHub Pages.
+
+## Google Analytics
+
+1. Create a GA4 property and web data stream for `tickle.maskedsyntax.com`.
+2. Copy the measurement ID (`G-XXXXXXXXXX`).
+3. **Local builds:** copy `.env.example` to `.env` and set `PUBLIC_GA_MEASUREMENT_ID`.
+4. **Production:** add repo secret `PUBLIC_GA_MEASUREMENT_ID` (Settings → Secrets and variables → Actions).
+
+Analytics loads on all pages via `MainLayout.astro` only when a valid `G-` ID is set at build time.
+
+---
+
 # Astro Starter Kit: Basics
 
 ```sh

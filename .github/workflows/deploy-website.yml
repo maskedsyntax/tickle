@@ -42,6 +42,8 @@ jobs:
 
       - name: Build site
         working-directory: apps/tickle_website
+        env:
+          PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.PUBLIC_GA_MEASUREMENT_ID }}
         run: npm run build
 
       - name: Configure Pages
