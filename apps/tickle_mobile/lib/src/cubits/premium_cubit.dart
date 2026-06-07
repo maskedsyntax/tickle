@@ -38,8 +38,9 @@ class PremiumState {
 }
 
 class PremiumCubit extends Cubit<PremiumState> {
-  // TODO: Replace with your actual RevenueCat API keys
-  static const _appleApiKey = 'YOUR_APPLE_API_KEY';
+  // RevenueCat public SDK keys (safe to ship in the app binary).
+  static const _appleApiKey = 'appl_OirRxRzfnYdCuTbyacGlXCRdhlD';
+  // TODO: add the Android (goog_…) key before shipping Android IAP.
   static const _googleApiKey = 'YOUR_GOOGLE_API_KEY';
 
   // Entitlement ID defined in RevenueCat dashboard
@@ -52,7 +53,13 @@ class PremiumCubit extends Cubit<PremiumState> {
   // Fallback key for mock mode if keys are not set
   static const _mockProKey = 'is_pro_unlocked_mock';
 
-  bool get _isMockMode => _appleApiKey.contains('YOUR') || _googleApiKey.contains('YOUR');
+  // Mock mode only when the current platform's key is still a placeholder, so
+  // iOS can go live independently of the Android key.
+  bool get _isMockMode {
+    if (Platform.isIOS) return _appleApiKey.contains('YOUR');
+    if (Platform.isAndroid) return _googleApiKey.contains('YOUR');
+    return true;
+  }
 
   /// The lifetime package to purchase, resolved from RevenueCat offerings.
   Package? _proPackage;

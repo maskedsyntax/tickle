@@ -76,3 +76,27 @@ Below is the structured checklist for building the Tickle app. This file tracks 
   - [x] Setup `flutter_local_notifications`
   - [x] Add scheduling UI for daily nudges
 
+---
+
+## Phase 7: iOS App Store Launch Prep
+- [ ] In-App Purchase (Tickle Pro — $4.99 lifetime, non-consumable)
+  - [x] Wire RevenueCat `appl_` SDK key into `PremiumCubit` (iOS live, not mock)
+  - [ ] App Store Connect: ensure *Agreements, Tax, and Banking → Paid Apps* is **Active**
+  - [ ] App Store Connect: create non-consumable IAP `com.maskedsyntax.tickle.tickleMobile.pro_lifetime` ($4.99) with display name, description, and a paywall review screenshot → set **Ready to Submit**
+  - [ ] RevenueCat: finish App Store app config (upload `.p8` In-App Purchase key)
+  - [ ] RevenueCat: register the product in the Product catalog (Product ID must match exactly)
+  - [ ] RevenueCat: attach the product to the `tickle_pro` **entitlement**
+  - [ ] RevenueCat: add the product as the **Lifetime** package in the **current** offering
+  - [ ] App Store Connect: create a **Sandbox tester** account
+  - [ ] Sandbox-test the real $4.99 purchase on device (sign out of App Store → tap Unlock → confirm Pro unlocks)
+  - [ ] (Android, later) add the `goog_` key + Play Console product
+- [ ] App Store compliance
+  - [x] Add app-level `PrivacyInfo.xcprivacy` (UserDefaults + file-timestamp reasons)
+  - [ ] App Store Connect: fill the **App Privacy** questionnaire (declare RevenueCat purchase data) + add a **privacy policy URL**
+  - [ ] Consider removing unused `NSPhotoLibraryUsageDescription` (backup import uses the document picker)
+- [ ] Build & submit
+  - [ ] Verify iCloud container + App Groups are on the App ID and in the **distribution** provisioning profiles (Runner + widget)
+  - [ ] Bump build number; archive a **Release** build and run **Validate** in Xcode Organizer
+  - [ ] App Store Connect: screenshots, description, keywords, age rating
+  - [ ] Submit the app **with** the IAP attached to the version
+

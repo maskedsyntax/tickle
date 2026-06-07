@@ -93,20 +93,24 @@ class PaywallScreen extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 84,
-          height: 84,
+          width: 88,
+          height: 88,
           decoration: BoxDecoration(
-            gradient: _gradient,
-            borderRadius: BorderRadius.circular(24),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(22),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE94057).withValues(alpha: 0.35),
+                color: const Color(0xFF2F6BFF).withValues(alpha: 0.28),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
             ],
           ),
-          child: const Icon(Icons.star_rounded, color: Colors.white, size: 48),
+          clipBehavior: Clip.antiAlias,
+          child: Image.asset(
+            'assets/icons/tickle.png',
+            fit: BoxFit.cover,
+          ),
         ),
         const SizedBox(height: 20),
         Text(
