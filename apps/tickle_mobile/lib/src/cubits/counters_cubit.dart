@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:tickle_core/tickle_core.dart';
 import 'package:uuid/uuid.dart';
+import '../services/home_widget_service.dart';
 
 // States
 abstract class CountersState extends Equatable {
@@ -82,6 +83,10 @@ class CountersCubit extends Cubit<CountersState> {
 
   void _emitLoaded() {
     if (isClosed) return;
+    
+    // Sync widgets whenever active counters change
+    HomeWidgetService.updateWidgets(_repository);
+    
     emit(CountersLoaded(
       activeCounters: List.from(_activeCounters),
       archivedCounters: List.from(_archivedCounters),

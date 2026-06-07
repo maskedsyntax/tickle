@@ -9,6 +9,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:tickle_core/tickle_core.dart';
 import '../cubits/settings_cubit.dart';
 import '../cubits/counters_cubit.dart';
+import '../cubits/premium_cubit.dart';
+import '../services/cloud_sync_service.dart';
 import '../utils/haptic_feedback.dart';
 import '../widgets/ios_sliver_app_bar.dart';
 
@@ -22,16 +24,34 @@ class SettingsScreen extends StatelessWidget {
     final repo = RepositoryProvider.of<CountersRepository>(context);
 
     return Scaffold(
-      body: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(
-          parent: BouncingScrollPhysics(),
-        ),
+      body: BlocListener<PremiumCubit, PremiumState>(
+        listenWhen: (previous, current) => current.error != null && previous.error != current.error,
+        listener: (context, state) {
+          if (state.error != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error!),
+                backgroundColor: Colors.red,
+              ),
+            );
+            context.read<PremiumCubit>().clearError();
+          }
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
         slivers: [
           const IOSSliverAppBar(title: 'Settings'),
           SliverPadding(
             padding: const EdgeInsets.all(20.0),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
+                // Tickle Pro Section
+                _buildSectionHeader('Tickle Pro'),
+                _buildProSection(context),
+                const SizedBox(height: 28),
+
                 // Theme Selection
                 _buildSectionHeader('Appearance'),
                 _buildThemeSelector(context, settingsCubit),
@@ -56,8 +76,9 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildSectionHeader(String title) {
     return Padding(
@@ -203,6 +224,136 @@ class SettingsScreen extends StatelessWidget {
 
   Widget _buildDivider(BuildContext context) {
     return Divider(height: 1, indent: 56, color: Theme.of(context).dividerColor);
+  }
+
+  Widget _buildProSection(BuildContext context) {
+    return BlocBuilder<PremiumCubit, PremiumState>(
+      builder: (context, state) {
+        final isPro = state.isPro;
+        final isLoading = state.isLoading;
+        return Container(
+          decoration: BoxDecoration(
+            gradient: isPro 
+                ? null 
+                : const LinearGradient(
+                    colors: [Color(0xFF8A2387), Color(0xFFE94057), Color(0xFFF27121)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+            color: isPro ? Theme.of(context).cardColor : null,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Theme.of(context).dividerColor),
+          ),
+          child: Column(
+            children: [
+              ListTile(
+                leading: Icon(
+                  isPro ? Icons.star_rounded : Icons.lock_outline_rounded,
+                  color: isPro ? Colors.orangeAccent : Colors.white,
+                ),
+                title: Text(
+                  isPro ? 'Tickle Pro Unlocked' : 'Unlock Tickle Pro',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isPro ? null : Colors.white,
+                  ),
+                ),
+                subtitle: Text(
+                  isPro 
+                      ? 'Thanks for your support!' 
+                      : 'Cloud Sync, Widgets, and Reminders.',
+                  style: TextStyle(
+                    color: isPro ? Colors.grey : Colors.white70,
+                    fontSize: 13,
+                  ),
+                ),
+                trailing: isPro 
+                  ? null
+                  : isLoading 
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : ElevatedButton(
+                          onPressed: () {
+                            HapticsHelper.selectionClick('medium');
+                            context.read<PremiumCubit>().purchasePro();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: const Color(0xFFE94057),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: const Text('Get Pro', style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                onTap: isPro || isLoading ? null : () {
+                  HapticsHelper.selectionClick('medium');
+                  context.read<PremiumCubit>().purchasePro();
+                },
+                onLongPress: isPro ? () {
+                  HapticsHelper.trigger('heavy');
+                  context.read<PremiumCubit>().debugResetPro();
+                } : null,
+              ),
+              if (isPro) ...[
+                const Divider(height: 1),
+                TextButton.icon(
+                  onPressed: () async {
+                    HapticsHelper.selectionClick('medium');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Syncing with Cloud...')),
+                    );
+                    await context.read<CloudSyncService>().syncDatabase();
+                    if (context.mounted) {
+                      context.read<CountersCubit>().loadCounters();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Sync Complete!')),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.cloud_sync_rounded, size: 16, color: Colors.grey),
+                  label: const Text('Force Cloud Sync', style: TextStyle(color: Colors.grey, fontSize: 13)),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size.fromHeight(40),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              if (!isPro) ...[
+                const Divider(height: 1, color: Colors.white24),
+                TextButton(
+                  onPressed: isLoading ? null : () {
+                    HapticsHelper.selectionClick('medium');
+                    context.read<PremiumCubit>().restorePurchases();
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white70,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size.fromHeight(40),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                  ),
+                  child: const Text('Restore Purchases', style: TextStyle(fontSize: 12)),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildBackupCard(

@@ -42,10 +42,6 @@ Below is the structured checklist for building the Tickle app. This file tracks 
   - [x] Increment/decrement tactile buttons (ideal for thumb operation)
   - [x] Graph of historical metrics (last 7 days, last 30 days) using `fl_chart`
   - [x] Scrollable timeline of history logs (timestamp, count changes) with clear action option
-- [x] Insights Screen
-  - [x] Overall stats dashboard (total taps today, streaks)
-  - [x] Activity heatmap grid of daily counts
-  - [x] Distribution charts comparing counter volumes
 - [x] Settings Screen
   - [x] Light / Dark / System theme configuration
   - [x] Haptic feedback intensity settings (Off / Light / Medium / Heavy)
@@ -62,3 +58,21 @@ Below is the structured checklist for building the Tickle app. This file tracks 
 - [x] Run automated tests inside core, data, and mobile packages
 - [x] Perform build verification on iOS Simulator
 - [x] Final manual review of responsive UX layout
+
+---
+
+## Phase 6: Tickle Pro (Premium Features)
+- [x] Implement `PremiumCubit` and Mock Paywall UI
+  - [x] Add "Tickle Pro" section to Settings Screen
+  - [x] Add state management for Pro status
+- [ ] Implement Home Screen Widgets
+  - [x] iOS WidgetKit implementation (SwiftUI) *(Note: Requires manual Xcode target linkage and App Group setup)*
+  - [x] Android AppWidget implementation
+  - [x] Flutter `home_widget` integration for DB reading
+- [x] Implement Cloud Synchronization (Pro)
+  - [x] iOS: iCloud Key-Value or CloudKit sync for SQLite
+  - [x] Android: Google Drive sync
+- [x] Implement Local Reminders (Pro)
+  - [x] Setup `flutter_local_notifications`
+  - [x] Add scheduling UI for daily nudges
+

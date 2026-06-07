@@ -51,6 +51,14 @@ dependencies:
     path: ../../packages/tickle_data
   pull_down_button: ^0.10.2
   flutter_slidable: ^4.0.3
+  purchases_flutter: ^10.2.2
+  home_widget: ^0.9.2
+  icloud_storage: ^2.2.0
+  google_sign_in: ^6.2.1
+  googleapis: ^16.0.0
+  googleapis_auth: ^2.3.1
+  flutter_local_notifications: ^22.0.0
+  timezone: ^0.11.0
 
 dev_dependencies:
   flutter_test:

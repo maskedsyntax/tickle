@@ -13,6 +13,8 @@ import '../widgets/ios_sliver_app_bar.dart';
 import '../widgets/rapid_count_button.dart';
 import '../widgets/counter_form_sheet.dart';
 import '../utils/haptic_feedback.dart';
+import '../cubits/premium_cubit.dart';
+import '../services/notification_service.dart';
 
 class CounterDetailScreen extends StatelessWidget {
   final String counterId;
@@ -83,6 +85,34 @@ class _CounterDetailViewState extends State<CounterDetailView> {
 
   int _rapidDelta = 0;
 
+  Future<void> _handleSetReminder(BuildContext context, Counter counter) async {
+    final isPro = context.read<PremiumCubit>().state.isPro;
+    if (!isPro) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Reminders are a Tickle Pro feature!')),
+      );
+      return;
+    }
+
+    final TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (time != null && context.mounted) {
+      await context.read<NotificationService>().scheduleDailyReminder(
+        counter, 
+        time.hour, 
+        time.minute,
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Daily reminder set for ${time.format(context)}')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final settingsCubit = context.read<SettingsCubit>();
@@ -150,6 +180,14 @@ class _CounterDetailViewState extends State<CounterDetailView> {
                                 },
                               ),
                               PullDownMenuItem(
+                                title: 'Set Daily Reminder',
+                                icon: CupertinoIcons.bell,
+                                onTap: () {
+                                  HapticsHelper.selectionClick(hapticLevel);
+                                  _handleSetReminder(context, counter);
+                                },
+                              ),
+                              PullDownMenuItem(
                                 title: 'Clear History Logs',
                                 icon: CupertinoIcons.delete,
                                 isDestructive: true,
@@ -175,6 +213,9 @@ class _CounterDetailViewState extends State<CounterDetailView> {
                             } else if (val == 'reset') {
                               HapticsHelper.selectionClick(hapticLevel);
                               context.read<CounterDetailCubit>().reset();
+                            } else if (val == 'reminder') {
+                              HapticsHelper.selectionClick(hapticLevel);
+                              _handleSetReminder(context, counter);
                             } else if (val == 'clear_history') {
                               HapticsHelper.selectionClick(hapticLevel);
                               _confirmClearHistory(context);
@@ -188,6 +229,10 @@ class _CounterDetailViewState extends State<CounterDetailView> {
                             const PopupMenuItem(
                               value: 'reset',
                               child: Text('Reset Count'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'reminder',
+                              child: Text('Set Daily Reminder'),
                             ),
                             const PopupMenuItem(
                               value: 'clear_history',
