@@ -1,11 +1,10 @@
 import WidgetKit
 import SwiftUI
-#if canImport(AppIntents)
 import AppIntents
-#endif
-import home_widget
 
-// Define the counter model matching our JSON
+let appGroupId = "group.com.maskedsyntax.tickle.tickleMobile"
+
+// Counter model matching the JSON shared from the app.
 struct CounterData: Codable, Identifiable {
     let id: String
     let title: String
@@ -15,41 +14,23 @@ struct CounterData: Codable, Identifiable {
     let goalValue: Int?
 }
 
-struct Provider: TimelineProvider {
-    typealias Entry = TickleEntry
-
-    // Set the App Group ID
-    let userDefaults = UserDefaults(suiteName: "group.com.maskedsyntax.tickle.tickleMobile")
-
-    func placeholder(in context: Context) -> TickleEntry {
-        TickleEntry(date: Date(), counters: [
-            CounterData(id: "1", title: "Water", emoji: "💧", colorHex: "0xFF4A90E2", currentCount: 3, goalValue: 8)
-        ])
+// Reads every counter the app shared into the App Group.
+// Falls back to the legacy top-3 key for older app builds.
+func loadAllCounters() -> [CounterData] {
+    let defaults = UserDefaults(suiteName: appGroupId)
+    guard let jsonString = defaults?.string(forKey: "all_counters")
+            ?? defaults?.string(forKey: "top_counters"),
+          let data = jsonString.data(using: .utf8) else {
+        return []
     }
+    return (try? JSONDecoder().decode([CounterData].self, from: data)) ?? []
+}
 
-    func getSnapshot(in context: Context, completion: @escaping (TickleEntry) -> Void) {
-        completion(TickleEntry(date: Date(), counters: loadCounters()))
-    }
-    
-    func getTimeline(in context: Context, completion: @escaping (Timeline<TickleEntry>) -> Void) {
-        let entry = TickleEntry(date: Date(), counters: loadCounters())
-        let timeline = Timeline(entries: [entry], policy: .atEnd)
-        completion(timeline)
-    }
-    
-    private func loadCounters() -> [CounterData] {
-        guard let jsonString = userDefaults?.string(forKey: "top_counters"),
-              let jsonData = jsonString.data(using: .utf8) else {
-            return []
-        }
-        
-        do {
-            let counters = try JSONDecoder().decode([CounterData].self, from: jsonData)
-            return counters
-        } catch {
-            print("Failed to decode counters: \(error)")
-            return []
-        }
+// How many rows fit each widget size. Capped at 3.
+func maxRows(for family: WidgetFamily) -> Int {
+    switch family {
+    case .systemSmall: return 2
+    default: return 3
     }
 }
 
@@ -58,77 +39,157 @@ struct TickleEntry: TimelineEntry {
     let counters: [CounterData]
 }
 
-struct TickleWidgetEntryView : View {
-    var entry: Provider.Entry
+// MARK: - Widget configuration (pick which counters to show)
 
-    var body: some View {
-        VStack(spacing: 8) {
-            if entry.counters.isEmpty {
-                Text("Open Tickle to add a counter.")
-                    .font(.footnote)
-                    .foregroundColor(.gray)
-            } else {
-                ForEach(entry.counters.prefix(3)) { counter in
-                    HStack {
-                        Text(counter.emoji)
-                            .font(.title3)
-                        
-                        Text(counter.title)
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .lineLimit(1)
-                        
-                        Spacer()
-                        
-                        Text("\(counter.currentCount)")
-                            .font(.title3)
-                            .fontWeight(.bold)
-                            .foregroundColor(Color(hex: counter.colorHex))
-                        
-                        // Increment button (Interactive in iOS 17+)
-                        if #available(iOS 17.0, *) {
-                            Button(intent: IncrementIntent(counterId: counter.id)) {
-                                Image(systemName: "plus.circle.fill")
-                                    .foregroundColor(Color(hex: counter.colorHex))
-                                    .font(.title2)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.vertical, 4)
-                }
-            }
-        }
-        .modifier(WidgetBackgroundModifier())
+struct CounterEntity: AppEntity, Identifiable {
+    let id: String
+    let title: String
+    let emoji: String
+
+    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Counter"
+    static var defaultQuery = CounterQuery()
+
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: "\(emoji.isEmpty ? title : "\(emoji)  \(title)")")
     }
 }
 
-// Helper to support older iOS background rendering
-struct WidgetBackgroundModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(iOS 17.0, *) {
-            content.containerBackground(.fill.tertiary, for: .widget)
-        } else {
-            content.background(Color(UIColor.systemBackground))
-        }
+struct CounterQuery: EntityQuery {
+    func entities(for identifiers: [String]) async throws -> [CounterEntity] {
+        loadAllCounters()
+            .filter { identifiers.contains($0.id) }
+            .map { CounterEntity(id: $0.id, title: $0.title, emoji: $0.emoji) }
+    }
+
+    func suggestedEntities() async throws -> [CounterEntity] {
+        loadAllCounters().map { CounterEntity(id: $0.id, title: $0.title, emoji: $0.emoji) }
     }
 }
+
+struct SelectCountersIntent: WidgetConfigurationIntent {
+    static var title: LocalizedStringResource = "Choose Counters"
+    static var description = IntentDescription("Pick which counters appear in this widget.")
+
+    @Parameter(title: "Counters")
+    var counters: [CounterEntity]?
+
+    init() {}
+}
+
+// MARK: - Timeline provider
+
+struct Provider: AppIntentTimelineProvider {
+    func placeholder(in context: Context) -> TickleEntry {
+        TickleEntry(date: Date(), counters: Provider.sample)
+    }
+
+    func snapshot(for configuration: SelectCountersIntent, in context: Context) async -> TickleEntry {
+        TickleEntry(date: Date(), counters: resolve(configuration))
+    }
+
+    func timeline(for configuration: SelectCountersIntent, in context: Context) async -> Timeline<TickleEntry> {
+        let entry = TickleEntry(date: Date(), counters: resolve(configuration))
+        return Timeline(entries: [entry], policy: .atEnd)
+    }
+
+    // Selected counters (in the chosen order) with fresh values; defaults to all.
+    private func resolve(_ configuration: SelectCountersIntent) -> [CounterData] {
+        let all = loadAllCounters()
+        guard let selected = configuration.counters, !selected.isEmpty else {
+            return all
+        }
+        let byId = Dictionary(all.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        return selected.compactMap { byId[$0.id] }
+    }
+
+    static let sample = [
+        CounterData(id: "1", title: "Water", emoji: "💧", colorHex: "0xFF4A90E2", currentCount: 3, goalValue: 8),
+    ]
+}
+
+// MARK: - Widget
 
 @main
 struct TickleWidget: Widget {
     let kind: String = "TickleWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
+        AppIntentConfiguration(
+            kind: kind,
+            intent: SelectCountersIntent.self,
+            provider: Provider()
+        ) { entry in
             TickleWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("Top Counters")
-        .description("Quickly view and tap your top counters.")
+        .configurationDisplayName("Counters")
+        .description("View and tap your counters. Long-press to choose which ones to show.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
 
-// Color Hex Extension
+// MARK: - View
+
+struct TickleWidgetEntryView: View {
+    @Environment(\.widgetFamily) private var family
+    var entry: TickleEntry
+
+    var body: some View {
+        Group {
+            if entry.counters.isEmpty {
+                VStack(spacing: 4) {
+                    Image(systemName: "plus.circle.dashed")
+                        .font(.title2)
+                        .foregroundColor(.gray)
+                    Text("Open Tickle to add a counter.")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                }
+            } else {
+                VStack(spacing: 8) {
+                    ForEach(entry.counters.prefix(maxRows(for: family))) { counter in
+                        CounterRow(counter: counter)
+                    }
+                }
+            }
+        }
+        .containerBackground(.fill.tertiary, for: .widget)
+    }
+}
+
+struct CounterRow: View {
+    let counter: CounterData
+
+    var body: some View {
+        HStack {
+            Text(counter.emoji)
+                .font(.title3)
+
+            Text(counter.title)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .lineLimit(1)
+
+            Spacer()
+
+            Text("\(counter.currentCount)")
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(Color(hex: counter.colorHex))
+
+            Button(intent: IncrementIntent(counterId: counter.id)) {
+                Image(systemName: "plus.circle.fill")
+                    .foregroundColor(Color(hex: counter.colorHex))
+                    .font(.title2)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.vertical, 2)
+    }
+}
+
+// MARK: - Color from hex
+
 extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -150,7 +211,7 @@ extension Color {
             .sRGB,
             red: Double(r) / 255,
             green: Double(g) / 255,
-            blue:  Double(b) / 255,
+            blue: Double(b) / 255,
             opacity: Double(a) / 255
         )
     }

@@ -31,16 +31,20 @@ struct IncrementIntent: AppIntent {
         }
 
         // 1. Bump the displayed count so the widget updates immediately.
-        if let jsonString = defaults.string(forKey: "top_counters"),
-           let data = jsonString.data(using: .utf8),
-           var counters = (try? JSONSerialization.jsonObject(with: data)) as? [[String: Any]] {
+        //    Mirror the change into both the full list (iOS widget) and the
+        //    legacy top-3 list (Android / older builds) when present.
+        for key in ["all_counters", "top_counters"] {
+            guard let jsonString = defaults.string(forKey: key),
+                  let data = jsonString.data(using: .utf8),
+                  var counters = (try? JSONSerialization.jsonObject(with: data)) as? [[String: Any]]
+            else { continue }
             for i in counters.indices where counters[i]["id"] as? String == counterId {
                 let current = counters[i]["currentCount"] as? Int ?? 0
                 counters[i]["currentCount"] = current + 1
             }
             if let newData = try? JSONSerialization.data(withJSONObject: counters),
                let newString = String(data: newData, encoding: .utf8) {
-                defaults.set(newString, forKey: "top_counters")
+                defaults.set(newString, forKey: key)
             }
         }
 

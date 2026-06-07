@@ -10,6 +10,7 @@ import 'package:tickle_core/tickle_core.dart';
 import '../cubits/settings_cubit.dart';
 import '../cubits/counters_cubit.dart';
 import '../cubits/premium_cubit.dart';
+import 'paywall_screen.dart';
 import '../services/cloud_sync_service.dart';
 import '../utils/haptic_feedback.dart';
 import '../widgets/ios_sliver_app_bar.dart';
@@ -230,7 +231,6 @@ class SettingsScreen extends StatelessWidget {
     return BlocBuilder<PremiumCubit, PremiumState>(
       builder: (context, state) {
         final isPro = state.isPro;
-        final isLoading = state.isLoading;
         return Container(
           decoration: BoxDecoration(
             gradient: isPro 
@@ -268,30 +268,24 @@ class SettingsScreen extends StatelessWidget {
                     fontSize: 13,
                   ),
                 ),
-                trailing: isPro 
+                trailing: isPro
                   ? null
-                  : isLoading 
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                        )
-                      : ElevatedButton(
-                          onPressed: () {
-                            HapticsHelper.selectionClick('medium');
-                            context.read<PremiumCubit>().purchasePro();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFFE94057),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          child: const Text('Get Pro', style: TextStyle(fontWeight: FontWeight.bold)),
-                        ),
-                onTap: isPro || isLoading ? null : () {
+                  : ElevatedButton(
+                      onPressed: () {
+                        HapticsHelper.selectionClick('medium');
+                        PaywallScreen.show(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFFE94057),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('Get Pro', style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                onTap: isPro ? null : () {
                   HapticsHelper.selectionClick('medium');
-                  context.read<PremiumCubit>().purchasePro();
+                  PaywallScreen.show(context);
                 },
                 onLongPress: isPro ? () {
                   HapticsHelper.trigger('heavy');
@@ -326,27 +320,6 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-              ],
-              if (!isPro) ...[
-                const Divider(height: 1, color: Colors.white24),
-                TextButton(
-                  onPressed: isLoading ? null : () {
-                    HapticsHelper.selectionClick('medium');
-                    context.read<PremiumCubit>().restorePurchases();
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.white70,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    minimumSize: const Size.fromHeight(40),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                    ),
-                  ),
-                  child: const Text('Restore Purchases', style: TextStyle(fontSize: 12)),
                 ),
               ],
             ],

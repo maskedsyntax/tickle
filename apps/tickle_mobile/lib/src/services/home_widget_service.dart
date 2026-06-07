@@ -17,19 +17,23 @@ class HomeWidgetService {
   static Future<void> updateWidgets(CountersRepository repository) async {
     final activeCounters = await repository.getCounters(includeArchived: false);
     activeCounters.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-    
-    final topCounters = activeCounters.take(3).map((c) => {
-      'id': c.id,
-      'title': c.title,
-      'emoji': c.emoji ?? '',
-      'colorHex': c.colorHex,
-      'currentCount': c.currentCount,
-      'goalValue': c.goalValue,
-    }).toList();
 
-    final jsonString = jsonEncode(topCounters);
-    
-    await HomeWidget.saveWidgetData('top_counters', jsonString);
+    Map<String, dynamic> toJson(Counter c) => {
+          'id': c.id,
+          'title': c.title,
+          'emoji': c.emoji ?? '',
+          'colorHex': c.colorHex,
+          'currentCount': c.currentCount,
+          'goalValue': c.goalValue,
+        };
+
+    // Full list powers the iOS widget's counter picker and large size.
+    final allCounters = activeCounters.map(toJson).toList();
+    // Legacy top-3 list keeps the Android widget and older builds working.
+    final topCounters = activeCounters.take(3).map(toJson).toList();
+
+    await HomeWidget.saveWidgetData('all_counters', jsonEncode(allCounters));
+    await HomeWidget.saveWidgetData('top_counters', jsonEncode(topCounters));
     await HomeWidget.updateWidget(
       name: androidWidgetName,
       iOSName: iosWidgetName,

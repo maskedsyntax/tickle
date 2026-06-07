@@ -6,3 +6,10 @@ workspace:
   - apps/tickle_mobile
   - packages/tickle_core
   - packages/tickle_data
+
+# Pin path_provider_foundation below 2.6.0: that release adopted an
+# Objective-C FFI native-assets framework (`objective_c`) that fails to
+# bundle under `flutter run`, crashing the app on launch
+# ("Failed to load dynamic library objective_c.framework").
+dependency_overrides:
+  path_provider_foundation: 2.5.1
