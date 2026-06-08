@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/home_widget_service.dart';
 
 class PremiumState {
   final bool isPro;
@@ -123,6 +124,7 @@ class PremiumCubit extends Cubit<PremiumState> {
   void _updateProStatusFromInfo(CustomerInfo customerInfo) {
     final isPro = customerInfo.entitlements.all[_entitlementId]?.isActive == true;
     emit(state.copyWith(isPro: isPro));
+    HomeWidgetService.setProStatus(isPro);
   }
 
   void clearError() {
@@ -138,6 +140,7 @@ class PremiumCubit extends Cubit<PremiumState> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_mockProKey, true);
       emit(state.copyWith(isPro: true, isLoading: false));
+      HomeWidgetService.setProStatus(true);
       return;
     }
 
@@ -194,6 +197,7 @@ class PremiumCubit extends Cubit<PremiumState> {
     final prefs = await SharedPreferences.getInstance();
     final isPro = prefs.getBool(_mockProKey) ?? false;
     emit(state.copyWith(isPro: isPro));
+    HomeWidgetService.setProStatus(isPro);
   }
 
   Future<void> debugResetPro() async {
@@ -201,6 +205,7 @@ class PremiumCubit extends Cubit<PremiumState> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_mockProKey, false);
       emit(state.copyWith(isPro: false));
+      HomeWidgetService.setProStatus(false);
     }
   }
 }

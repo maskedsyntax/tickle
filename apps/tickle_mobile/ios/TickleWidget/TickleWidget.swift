@@ -34,6 +34,11 @@ func maxRows(for family: WidgetFamily) -> Int {
     }
 }
 
+// Widgets are a Tickle Pro feature; the app writes this flag into the App Group.
+func isProUnlocked() -> Bool {
+    UserDefaults(suiteName: appGroupId)?.bool(forKey: "is_pro") ?? false
+}
+
 struct TickleEntry: TimelineEntry {
     let date: Date
     let counters: [CounterData]
@@ -134,26 +139,53 @@ struct TickleWidgetEntryView: View {
     var entry: TickleEntry
 
     var body: some View {
-        Group {
-            if entry.counters.isEmpty {
-                VStack(spacing: 4) {
-                    Image(systemName: "plus.circle.dashed")
-                        .font(.title2)
-                        .foregroundColor(.gray)
-                    Text("Open Tickle to add a counter.")
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                        .multilineTextAlignment(.center)
-                }
-            } else {
-                VStack(spacing: 8) {
-                    ForEach(entry.counters.prefix(maxRows(for: family))) { counter in
-                        CounterRow(counter: counter)
-                    }
+        content
+            .containerBackground(.fill.tertiary, for: .widget)
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if !isProUnlocked() {
+            lockedView
+        } else if entry.counters.isEmpty {
+            emptyView
+        } else {
+            VStack(spacing: 8) {
+                ForEach(entry.counters.prefix(maxRows(for: family))) { counter in
+                    CounterRow(counter: counter)
                 }
             }
         }
-        .containerBackground(.fill.tertiary, for: .widget)
+    }
+
+    // Shown to non-Pro users. Tapping opens the app to upgrade.
+    private var lockedView: some View {
+        VStack(spacing: 6) {
+            Image(systemName: "lock.fill")
+                .font(.title2)
+                .foregroundColor(.secondary)
+            Text("Tickle Pro")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+            Text("Unlock widgets in the app")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding(8)
+        .widgetURL(URL(string: "tickle://pro"))
+    }
+
+    private var emptyView: some View {
+        VStack(spacing: 4) {
+            Image(systemName: "plus.circle.dashed")
+                .font(.title2)
+                .foregroundColor(.gray)
+            Text("Open Tickle to add a counter.")
+                .font(.footnote)
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+        }
     }
 }
 

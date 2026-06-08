@@ -9,9 +9,21 @@ class HomeWidgetService {
   static const String androidWidgetName = 'TickleWidgetProvider';
 
   static const String pendingIncrementsKey = 'pending_increments';
+  static const String proKey = 'is_pro';
 
   static Future<void> init() async {
     await HomeWidget.setAppGroupId(appGroupId);
+  }
+
+  /// Shares Pro status with the widget. Widgets are a Tickle Pro feature, so
+  /// the native widget shows a locked "Unlock Tickle Pro" state when this is
+  /// false. Call whenever Pro status is known or changes.
+  static Future<void> setProStatus(bool isPro) async {
+    await HomeWidget.saveWidgetData<bool>(proKey, isPro);
+    await HomeWidget.updateWidget(
+      name: androidWidgetName,
+      iOSName: iosWidgetName,
+    );
   }
 
   static Future<void> updateWidgets(CountersRepository repository) async {

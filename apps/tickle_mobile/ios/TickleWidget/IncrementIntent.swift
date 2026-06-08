@@ -30,6 +30,11 @@ struct IncrementIntent: AppIntent {
             return .result()
         }
 
+        // Widgets are a Tickle Pro feature — ignore taps when not unlocked.
+        guard defaults.bool(forKey: "is_pro") else {
+            return .result()
+        }
+
         // 1. Bump the displayed count so the widget updates immediately.
         //    Mirror the change into both the full list (iOS widget) and the
         //    legacy top-3 list (Android / older builds) when present.
