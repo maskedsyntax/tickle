@@ -79,16 +79,16 @@ Below is the structured checklist for building the Tickle app. This file tracks 
 ---
 
 ## Phase 7: iOS App Store Launch Prep
-- [ ] In-App Purchase (Tickle Pro — $4.99 lifetime, non-consumable)
+- [x] In-App Purchase (Tickle Pro — $4.99 lifetime, non-consumable) — **iOS verified in sandbox**
   - [x] Wire RevenueCat `appl_` SDK key into `PremiumCubit` (iOS live, not mock)
-  - [ ] App Store Connect: ensure *Agreements, Tax, and Banking → Paid Apps* is **Active**
-  - [ ] App Store Connect: create non-consumable IAP `com.maskedsyntax.tickle.tickleMobile.pro_lifetime` ($4.99) with display name, description, and a paywall review screenshot → set **Ready to Submit**
-  - [ ] RevenueCat: finish App Store app config (upload `.p8` In-App Purchase key)
-  - [ ] RevenueCat: register the product in the Product catalog (Product ID must match exactly)
-  - [ ] RevenueCat: attach the product to the `tickle_pro` **entitlement**
-  - [ ] RevenueCat: add the product as the **Lifetime** package in the **current** offering
-  - [ ] App Store Connect: create a **Sandbox tester** account
-  - [ ] Sandbox-test the real $4.99 purchase on device (sign out of App Store → tap Unlock → confirm Pro unlocks)
+  - [x] App Store Connect: Paid Apps agreement active
+  - [x] App Store Connect: create non-consumable IAP `com.maskedsyntax.tickle.tickleMobile.pro_lifetime` ($4.99), **Ready to Submit**
+  - [x] RevenueCat: App Store app config with `.p8` In-App Purchase key
+  - [x] RevenueCat: register the product (Product ID matches)
+  - [x] RevenueCat: attach the product to the `tickle_pro` **entitlement**
+  - [x] RevenueCat: add the product as the **Lifetime** package in the **current** offering
+  - [x] App Store Connect: create a **Sandbox tester** account
+  - [x] Sandbox-test the real $4.99 purchase on device (paywall shows $4.99, purchase unlocks Pro)
   - [ ] (Android, later) add the `goog_` key + Play Console product
 - [ ] App Store compliance
   - [x] Add app-level `PrivacyInfo.xcprivacy` (UserDefaults + file-timestamp reasons)
