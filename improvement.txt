@@ -1,0 +1,61 @@
+# Tickle App Improvement Roadmap (Consolidated)
+
+This document consolidates all analysis regarding the App Store performance drop, conversion issues, and technical debt found in the codebase. It provides a comprehensive action plan to improve reach, conversion, retention, and the overall product experience.
+
+---
+
+## 1. App Store Optimization (ASO) & Reach
+The app is currently struggling because it is positioned to "count anything" in a saturated market filled with specific, niche solutions. You have high impressions (1.07K) but terrible product page views (77), meaning the initial search result isn't compelling.
+
+*   **Subtitle:** 
+    *   *Current:* "Tap to count anything!" (Wastes keyword space, repeats the title).
+    *   *Fix:* Use the subtitle for high-value keywords. E.g., "Tally Log, Habit & Goal Tracker" or "Clicker for Reps & Water".
+*   **Keywords:**
+    *   *Current:* Broad, highly competitive terms (`habit, tracker, clicker`).
+    *   *Fix:* Target long-tail, niche keywords: `knitting row counter`, `inventory tally`, `adhd tracker`, `sip tracker`, `pitch counter`.
+*   **Localization (The Fastest Growth Lever):**
+    *   *Issue:* The app and App Store listing are exclusively in English.
+    *   *Fix:* Translate your App Store metadata (Title, Subtitle, Keywords, Description) into 5-10 languages (Spanish, German, French, Japanese, Chinese). This instantly multiplies your impressions.
+
+---
+
+## 2. Conversion Rate Optimization (Screenshots)
+Your conversion rate is 1.71%, which is far below the industry average. Users are reaching your page but choosing not to download.
+
+*   **First Screenshot:** Currently shows a blank "Create any counter" screen. This implies work for the user. Change this to a "Hero" image showing a fully populated, colorful app with 5-6 active counters (e.g., "Days since I quit smoking," "Books Read," "Pushups"). Show the *outcome*, not the *setup*.
+*   **Highlight the Paywall Model:** "No Subscriptions" / "One-Time Purchase" is a massive selling point. Put this in bold on your screenshots and promotional text.
+
+---
+
+## 3. Critical Codebase Additions (Technical Debt)
+A review of the product identified several growth-loop additions for the native Swift app.
+
+*   **In-App Reviews**
+    *   *Status:* Implemented with StoreKit milestone prompts.
+*   **Analytics & Crash Reporting**
+    *   *Status:* Completely missing (no Firebase Analytics, Crashlytics, or Sentry).
+    *   *Fix:* You are flying blind. Add basic funnel tracking (`App Opened` -> `Onboarding Completed` -> `Counter Created`) so you know exactly where the 1.71% of users are dropping off.
+*   **App Tracking Transparency (ATT)**
+    *   *Status:* Not required unless future analytics or advertising performs cross-app tracking.
+*   **Codebase Localization**
+    *   *Status:* Strings are hardcoded.
+    *   *Fix:* Move user-facing strings into a String Catalog (`Localizable.xcstrings`).
+*   **Deep Linking**
+    *   *Status:* Missing.
+    *   *Fix:* Add Universal Links and SwiftUI URL routing for shared counter templates.
+
+---
+
+## 4. Product Features for Retention
+Your App Connect data shows "Not Enough Data" for retention. Here is what we must add to keep users coming back past Day 1.
+
+*   **Systemic Re-engagement Notifications**
+    *   *Status:* Implemented with native UserNotifications and contextual permission requests.
+*   **Free Interactive Widgets**
+    *   *Status:* Implemented as one free primary counter; Pro unlocks every counter and family.
+*   **Guided Onboarding**
+    *   *Status:* Implemented with selectable starter templates.
+*   **Satisfying Sounds**
+    *   *Status:* Implemented natively with configurable sound and haptic feedback.
+*   **Apple Watch Companion App**
+    *   *Status:* Implemented with offline operations reconciled through WatchConnectivity.

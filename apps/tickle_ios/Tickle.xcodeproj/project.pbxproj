@@ -1,0 +1,899 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02C6D4932F532309F7CCE774 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9028BF4A81B4338A6390D99 /* SettingsStore.swift */; };
+		0A6C90C43039EB6AAFD42477 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2EA5F644BED63975D6E7683 /* ContentView.swift */; };
+		0B18C5C7F14AF4D80A8C2476 /* ModelContainerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F74CCA7514C1A29ACA4912 /* ModelContainerFactory.swift */; };
+		170DEA467F25D6EBF5C5D96B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A4654D7E8A9C407746C25F7 /* Assets.xcassets */; };
+		1CBCB43EA9A256F6AC2B34EA /* ModelContainerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F74CCA7514C1A29ACA4912 /* ModelContainerFactory.swift */; };
+		2027CC4731325C403292155E /* WatchSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11B6078CC86C5F8E730B449 /* WatchSyncService.swift */; };
+		2F51452B207D315709349395 /* TickleWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6FBD57CA7205EB754715AACF /* TickleWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		3B6076BEF6DEABA0754DE156 /* CounterDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5656FC25BA96A59B6059A6EC /* CounterDetailView.swift */; };
+		411145B9CC866411175901CB /* CounterStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C94EEBD733DA76B3A38D1A /* CounterStoreTests.swift */; };
+		46B02ED1D01F3F72C98B89B3 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F18B8AAEAB1512DE3ABE19B2 /* NotificationService.swift */; };
+		49198F9B63A57EE30A810537 /* CounterLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6080150357932B4FFC4AF6 /* CounterLog.swift */; };
+		5030DA2D70FB7F4A7B255D9D /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3132B8C109AEA3670EC7011F /* Color+Hex.swift */; };
+		50641FBE570CD5B8D4F9264D /* Counter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286637DE7EE9BAE33BD90569 /* Counter.swift */; };
+		56408A95996F03AEFE035999 /* CounterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0499756463B65CB0B7C5F88 /* CounterStore.swift */; };
+		5A1C5DE605DC2220FA2686A8 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B254FB1ECCDEBD66E6C9B202 /* Color+Extensions.swift */; };
+		61752964122FA3492A1D4FFA /* WatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B6FFB135587C785152EA6E4 /* WatchApp.swift */; };
+		6E31704B8FBA2F72398F79AD /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F165F675C88FDE211B15587 /* SettingsView.swift */; };
+		746459116C678D72BC3E9ACC /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0688F6CD2EE21221A3F873A5 /* AppConstants.swift */; };
+		84E9C9408433F9417311C070 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3132B8C109AEA3670EC7011F /* Color+Hex.swift */; };
+		87B5FA893FFC38CE85E0FFD6 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0688F6CD2EE21221A3F873A5 /* AppConstants.swift */; };
+		8D88600189481F7F6D0BFEE2 /* PurchaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 481507E8AA6BB17B6D312CF9 /* PurchaseService.swift */; };
+		919D6F0C2A12A20F9E7A5478 /* Counter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286637DE7EE9BAE33BD90569 /* Counter.swift */; };
+		99BAA83D3AE951297DF6D6B7 /* Counter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286637DE7EE9BAE33BD90569 /* Counter.swift */; };
+		9FD095E7BD5586F981A3E66E /* LegacyMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157BFB17760F0F6E26025B22 /* LegacyMigrationTests.swift */; };
+		A00A0C2B3BEF6916AEB8A34C /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B605ACE465EBB2C6DEC90D /* OnboardingView.swift */; };
+		A5E8CD4031F11EB7B40A2937 /* CounterLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6080150357932B4FFC4AF6 /* CounterLog.swift */; };
+		B2F61BA194E2F4D1AA5F865E /* SoundService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE5C53DB858BCB9FBA8486F4 /* SoundService.swift */; };
+		B42F5E14C2DF902F1EF8AE58 /* WatchListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09506E335205173635A82B1 /* WatchListView.swift */; };
+		B913E2C9C80137906266EDD2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6CE511DBB9FE0281E357BFA7 /* Assets.xcassets */; };
+		B957762A1A3609C660D76D7F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 43EA59981787A2292CE76D08 /* PrivacyInfo.xcprivacy */; };
+		C086396B9595561D98838E96 /* CounterEditorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE98CE9516B37319D5640402 /* CounterEditorSheet.swift */; };
+		C7720DD3CB76C130721751AE /* CounterLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6080150357932B4FFC4AF6 /* CounterLog.swift */; };
+		C82987B1748E91D80E08C23E /* TickleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA50F309B892528AD05032C /* TickleApp.swift */; };
+		CD313591ED075E54F48F7D98 /* WatchSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11B6078CC86C5F8E730B449 /* WatchSyncService.swift */; };
+		CD633D71D552716321B6F21C /* SyncStatusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB11AC766F2FCCBC71EF256 /* SyncStatusService.swift */; };
+		D91EB934813FD169D699C26E /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3132B8C109AEA3670EC7011F /* Color+Hex.swift */; };
+		DE12090EFBC31FF25C5D6F7D /* RatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46C17A9C21C3D1B29AEB329E /* RatingService.swift */; };
+		E6292C2AD5B5C06C8C338EB0 /* TickleWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A9D0759B52F8BB87BD077AAC /* TickleWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E9C975B46987CA157D195615 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01775C54C46F88D1B956E380 /* HomeView.swift */; };
+		EC61F4D110A0E51029DDEBE4 /* TickleWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25221A1D80A3AF49156B65CC /* TickleWidget.swift */; };
+		F0B8AFC9ED079B2DA196FA79 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 3FC6EABD35D8B96D14FEF909 /* RevenueCat */; };
+		F72CAACE07F505BB8D6F8997 /* LegacyMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B40D2D3DF61676CD0E173EA /* LegacyMigrationService.swift */; };
+		FEE9A514F25DE3B2B3228BCB /* IncrementIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B99F547EE0D630B769794D5 /* IncrementIntent.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7B1C2E2AE428F43C3F01DA94 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DA6F84369CFE251EF65A08BB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 294CD7D9DC32DFF49DE1DF39;
+			remoteInfo = TickleWatch;
+		};
+		C53D7DC7681AF4729A530453 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DA6F84369CFE251EF65A08BB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 055DA8489C6B32DF3A8A5E8D;
+			remoteInfo = TickleWidget;
+		};
+		FB79CDCC9DDB274305D1A835 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DA6F84369CFE251EF65A08BB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FD77B9C6643B5226BAF421F1;
+			remoteInfo = Tickle;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		6EB7DC130D8962BAF7120DC8 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				E6292C2AD5B5C06C8C338EB0 /* TickleWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B1C89B28F959A16D24A82DB5 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2F51452B207D315709349395 /* TickleWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		01775C54C46F88D1B956E380 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		0688F6CD2EE21221A3F873A5 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
+		11C94EEBD733DA76B3A38D1A /* CounterStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterStoreTests.swift; sourceTree = "<group>"; };
+		157BFB17760F0F6E26025B22 /* LegacyMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyMigrationTests.swift; sourceTree = "<group>"; };
+		18D54698B71ED9BFDBEC74C1 /* TickleTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TickleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B99F547EE0D630B769794D5 /* IncrementIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementIntent.swift; sourceTree = "<group>"; };
+		1EEF81DCA9ACFA0A4B60DA59 /* Tickle.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Tickle.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		25221A1D80A3AF49156B65CC /* TickleWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TickleWidget.swift; sourceTree = "<group>"; };
+		286637DE7EE9BAE33BD90569 /* Counter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Counter.swift; sourceTree = "<group>"; };
+		2AB11AC766F2FCCBC71EF256 /* SyncStatusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatusService.swift; sourceTree = "<group>"; };
+		3132B8C109AEA3670EC7011F /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
+		3B40D2D3DF61676CD0E173EA /* LegacyMigrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyMigrationService.swift; sourceTree = "<group>"; };
+		3B6FFB135587C785152EA6E4 /* WatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchApp.swift; sourceTree = "<group>"; };
+		3FD68930B0861ADC457DEFAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		43EA59981787A2292CE76D08 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		46C17A9C21C3D1B29AEB329E /* RatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingService.swift; sourceTree = "<group>"; };
+		481507E8AA6BB17B6D312CF9 /* PurchaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseService.swift; sourceTree = "<group>"; };
+		4F165F675C88FDE211B15587 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		5656FC25BA96A59B6059A6EC /* CounterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterDetailView.swift; sourceTree = "<group>"; };
+		596D6C84B98EE4283A600E45 /* TickleWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TickleWidget.entitlements; sourceTree = "<group>"; };
+		5EA50F309B892528AD05032C /* TickleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TickleApp.swift; sourceTree = "<group>"; };
+		6CE511DBB9FE0281E357BFA7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6FBD57CA7205EB754715AACF /* TickleWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = TickleWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F6080150357932B4FFC4AF6 /* CounterLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterLog.swift; sourceTree = "<group>"; };
+		9A4654D7E8A9C407746C25F7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A076CAC6A2A331D96BE78F38 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A09506E335205173635A82B1 /* WatchListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchListView.swift; sourceTree = "<group>"; };
+		A8DC9E03E0C25105C1451554 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A9D0759B52F8BB87BD077AAC /* TickleWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TickleWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE98CE9516B37319D5640402 /* CounterEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterEditorSheet.swift; sourceTree = "<group>"; };
+		B0499756463B65CB0B7C5F88 /* CounterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterStore.swift; sourceTree = "<group>"; };
+		B254FB1ECCDEBD66E6C9B202 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
+		C1F74CCA7514C1A29ACA4912 /* ModelContainerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContainerFactory.swift; sourceTree = "<group>"; };
+		C2EA5F644BED63975D6E7683 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D7283C2D542A594DE6E3F1B1 /* Tickle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tickle.entitlements; sourceTree = "<group>"; };
+		D9028BF4A81B4338A6390D99 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		E11B6078CC86C5F8E730B449 /* WatchSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSyncService.swift; sourceTree = "<group>"; };
+		F18B8AAEAB1512DE3ABE19B2 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		F2B605ACE465EBB2C6DEC90D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		FE5C53DB858BCB9FBA8486F4 /* SoundService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D9F7BBB765D9E901B73BEA9D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0B8AFC9ED079B2DA196FA79 /* RevenueCat in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		02A091BC5300CC01EDAE58AE /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B0499756463B65CB0B7C5F88 /* CounterStore.swift */,
+				3B40D2D3DF61676CD0E173EA /* LegacyMigrationService.swift */,
+				C1F74CCA7514C1A29ACA4912 /* ModelContainerFactory.swift */,
+				F18B8AAEAB1512DE3ABE19B2 /* NotificationService.swift */,
+				481507E8AA6BB17B6D312CF9 /* PurchaseService.swift */,
+				46C17A9C21C3D1B29AEB329E /* RatingService.swift */,
+				D9028BF4A81B4338A6390D99 /* SettingsStore.swift */,
+				FE5C53DB858BCB9FBA8486F4 /* SoundService.swift */,
+				2AB11AC766F2FCCBC71EF256 /* SyncStatusService.swift */,
+				E11B6078CC86C5F8E730B449 /* WatchSyncService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		1C6DA4152AEB3A2B770699E2 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				4F165F675C88FDE211B15587 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		3A2786BC020DC5F7865DBBD5 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				F2B605ACE465EBB2C6DEC90D /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		4B9AA0DF0BC4383A5B3CF46C /* TickleWatch */ = {
+			isa = PBXGroup;
+			children = (
+				3FD68930B0861ADC457DEFAE /* Info.plist */,
+				3B6FFB135587C785152EA6E4 /* WatchApp.swift */,
+				A09506E335205173635A82B1 /* WatchListView.swift */,
+			);
+			path = TickleWatch;
+			sourceTree = "<group>";
+		};
+		545D2DFEA132EE500F905DB5 = {
+			isa = PBXGroup;
+			children = (
+				F8B54930904FD05D1F796C06 /* Tickle */,
+				8E23675155053D738C375C3B /* TickleTests */,
+				4B9AA0DF0BC4383A5B3CF46C /* TickleWatch */,
+				BF67F489271EDB53954C2AE1 /* TickleWidget */,
+				5CEE94EB3D0D83E4890AC9F2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		565B23DF35BABF2C544DEE72 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B254FB1ECCDEBD66E6C9B202 /* Color+Extensions.swift */,
+				3132B8C109AEA3670EC7011F /* Color+Hex.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		5CEE94EB3D0D83E4890AC9F2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1EEF81DCA9ACFA0A4B60DA59 /* Tickle.app */,
+				18D54698B71ED9BFDBEC74C1 /* TickleTests.xctest */,
+				A9D0759B52F8BB87BD077AAC /* TickleWatch.app */,
+				6FBD57CA7205EB754715AACF /* TickleWidget.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		72EC19437575FD5D71B11C01 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C2EA5F644BED63975D6E7683 /* ContentView.swift */,
+				AE98CE9516B37319D5640402 /* CounterEditorSheet.swift */,
+				7FD1974B56EB36B5907DFD26 /* Detail */,
+				730FE53E1D1A904F6675C257 /* Home */,
+				3A2786BC020DC5F7865DBBD5 /* Onboarding */,
+				1C6DA4152AEB3A2B770699E2 /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		730FE53E1D1A904F6675C257 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				01775C54C46F88D1B956E380 /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		7FD1974B56EB36B5907DFD26 /* Detail */ = {
+			isa = PBXGroup;
+			children = (
+				5656FC25BA96A59B6059A6EC /* CounterDetailView.swift */,
+			);
+			path = Detail;
+			sourceTree = "<group>";
+		};
+		8E23675155053D738C375C3B /* TickleTests */ = {
+			isa = PBXGroup;
+			children = (
+				11C94EEBD733DA76B3A38D1A /* CounterStoreTests.swift */,
+				157BFB17760F0F6E26025B22 /* LegacyMigrationTests.swift */,
+			);
+			path = TickleTests;
+			sourceTree = "<group>";
+		};
+		A10B0FF8BD94BD79D4BE17D5 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				5EA50F309B892528AD05032C /* TickleApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		BF67F489271EDB53954C2AE1 /* TickleWidget */ = {
+			isa = PBXGroup;
+			children = (
+				9A4654D7E8A9C407746C25F7 /* Assets.xcassets */,
+				1B99F547EE0D630B769794D5 /* IncrementIntent.swift */,
+				A076CAC6A2A331D96BE78F38 /* Info.plist */,
+				596D6C84B98EE4283A600E45 /* TickleWidget.entitlements */,
+				25221A1D80A3AF49156B65CC /* TickleWidget.swift */,
+			);
+			path = TickleWidget;
+			sourceTree = "<group>";
+		};
+		F8B54930904FD05D1F796C06 /* Tickle */ = {
+			isa = PBXGroup;
+			children = (
+				6CE511DBB9FE0281E357BFA7 /* Assets.xcassets */,
+				A8DC9E03E0C25105C1451554 /* Info.plist */,
+				43EA59981787A2292CE76D08 /* PrivacyInfo.xcprivacy */,
+				D7283C2D542A594DE6E3F1B1 /* Tickle.entitlements */,
+				A10B0FF8BD94BD79D4BE17D5 /* App */,
+				565B23DF35BABF2C544DEE72 /* Extensions */,
+				FF62D2F0E8AC6F53C09CC203 /* Models */,
+				02A091BC5300CC01EDAE58AE /* Services */,
+				72EC19437575FD5D71B11C01 /* Views */,
+			);
+			path = Tickle;
+			sourceTree = "<group>";
+		};
+		FF62D2F0E8AC6F53C09CC203 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0688F6CD2EE21221A3F873A5 /* AppConstants.swift */,
+				286637DE7EE9BAE33BD90569 /* Counter.swift */,
+				7F6080150357932B4FFC4AF6 /* CounterLog.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		055DA8489C6B32DF3A8A5E8D /* TickleWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DB5C717BA10196C95C928D08 /* Build configuration list for PBXNativeTarget "TickleWidget" */;
+			buildPhases = (
+				6B0ED72B5C26B4AB3EE447D3 /* Sources */,
+				5E55E86DB613CEE4635A4D32 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TickleWidget;
+			packageProductDependencies = (
+			);
+			productName = TickleWidget;
+			productReference = 6FBD57CA7205EB754715AACF /* TickleWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		294CD7D9DC32DFF49DE1DF39 /* TickleWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 06F5E9DCC7BB8F8B2D2F8BC7 /* Build configuration list for PBXNativeTarget "TickleWatch" */;
+			buildPhases = (
+				B3E266F09861FDD81BDADEFB /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TickleWatch;
+			packageProductDependencies = (
+			);
+			productName = TickleWatch;
+			productReference = A9D0759B52F8BB87BD077AAC /* TickleWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		57E200988084A6654902BF71 /* TickleTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9795939CA2C67FB11EF9FC3D /* Build configuration list for PBXNativeTarget "TickleTests" */;
+			buildPhases = (
+				817378EBA4A09F6A849AC3C8 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				36911C48224339222F4E3418 /* PBXTargetDependency */,
+			);
+			name = TickleTests;
+			packageProductDependencies = (
+			);
+			productName = TickleTests;
+			productReference = 18D54698B71ED9BFDBEC74C1 /* TickleTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		FD77B9C6643B5226BAF421F1 /* Tickle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F28A46B6D10C7392D037E5C7 /* Build configuration list for PBXNativeTarget "Tickle" */;
+			buildPhases = (
+				349A4B10C59DD9B052C4A488 /* Sources */,
+				533C1E3D5E022B716FCEA27E /* Resources */,
+				D9F7BBB765D9E901B73BEA9D /* Frameworks */,
+				B1C89B28F959A16D24A82DB5 /* Embed Foundation Extensions */,
+				6EB7DC130D8962BAF7120DC8 /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				397D19DA08EB31D50804EC40 /* PBXTargetDependency */,
+				E9D4014910FE4ED43A80C734 /* PBXTargetDependency */,
+			);
+			name = Tickle;
+			packageProductDependencies = (
+				3FC6EABD35D8B96D14FEF909 /* RevenueCat */,
+			);
+			productName = Tickle;
+			productReference = 1EEF81DCA9ACFA0A4B60DA59 /* Tickle.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DA6F84369CFE251EF65A08BB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					055DA8489C6B32DF3A8A5E8D = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					294CD7D9DC32DFF49DE1DF39 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					57E200988084A6654902BF71 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					FD77B9C6643B5226BAF421F1 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = DBE11C6179D318FEEDC61EA7 /* Build configuration list for PBXProject "Tickle" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 545D2DFEA132EE500F905DB5;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9B9F00789533A059FED608CE /* XCRemoteSwiftPackageReference "purchases-ios" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 5CEE94EB3D0D83E4890AC9F2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FD77B9C6643B5226BAF421F1 /* Tickle */,
+				57E200988084A6654902BF71 /* TickleTests */,
+				294CD7D9DC32DFF49DE1DF39 /* TickleWatch */,
+				055DA8489C6B32DF3A8A5E8D /* TickleWidget */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		533C1E3D5E022B716FCEA27E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B913E2C9C80137906266EDD2 /* Assets.xcassets in Resources */,
+				B957762A1A3609C660D76D7F /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5E55E86DB613CEE4635A4D32 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				170DEA467F25D6EBF5C5D96B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		349A4B10C59DD9B052C4A488 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				746459116C678D72BC3E9ACC /* AppConstants.swift in Sources */,
+				5A1C5DE605DC2220FA2686A8 /* Color+Extensions.swift in Sources */,
+				84E9C9408433F9417311C070 /* Color+Hex.swift in Sources */,
+				0A6C90C43039EB6AAFD42477 /* ContentView.swift in Sources */,
+				50641FBE570CD5B8D4F9264D /* Counter.swift in Sources */,
+				3B6076BEF6DEABA0754DE156 /* CounterDetailView.swift in Sources */,
+				C086396B9595561D98838E96 /* CounterEditorSheet.swift in Sources */,
+				C7720DD3CB76C130721751AE /* CounterLog.swift in Sources */,
+				56408A95996F03AEFE035999 /* CounterStore.swift in Sources */,
+				E9C975B46987CA157D195615 /* HomeView.swift in Sources */,
+				F72CAACE07F505BB8D6F8997 /* LegacyMigrationService.swift in Sources */,
+				0B18C5C7F14AF4D80A8C2476 /* ModelContainerFactory.swift in Sources */,
+				46B02ED1D01F3F72C98B89B3 /* NotificationService.swift in Sources */,
+				A00A0C2B3BEF6916AEB8A34C /* OnboardingView.swift in Sources */,
+				8D88600189481F7F6D0BFEE2 /* PurchaseService.swift in Sources */,
+				DE12090EFBC31FF25C5D6F7D /* RatingService.swift in Sources */,
+				02C6D4932F532309F7CCE774 /* SettingsStore.swift in Sources */,
+				6E31704B8FBA2F72398F79AD /* SettingsView.swift in Sources */,
+				B2F61BA194E2F4D1AA5F865E /* SoundService.swift in Sources */,
+				CD633D71D552716321B6F21C /* SyncStatusService.swift in Sources */,
+				C82987B1748E91D80E08C23E /* TickleApp.swift in Sources */,
+				2027CC4731325C403292155E /* WatchSyncService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6B0ED72B5C26B4AB3EE447D3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				87B5FA893FFC38CE85E0FFD6 /* AppConstants.swift in Sources */,
+				5030DA2D70FB7F4A7B255D9D /* Color+Hex.swift in Sources */,
+				99BAA83D3AE951297DF6D6B7 /* Counter.swift in Sources */,
+				49198F9B63A57EE30A810537 /* CounterLog.swift in Sources */,
+				FEE9A514F25DE3B2B3228BCB /* IncrementIntent.swift in Sources */,
+				1CBCB43EA9A256F6AC2B34EA /* ModelContainerFactory.swift in Sources */,
+				EC61F4D110A0E51029DDEBE4 /* TickleWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		817378EBA4A09F6A849AC3C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				411145B9CC866411175901CB /* CounterStoreTests.swift in Sources */,
+				9FD095E7BD5586F981A3E66E /* LegacyMigrationTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B3E266F09861FDD81BDADEFB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D91EB934813FD169D699C26E /* Color+Hex.swift in Sources */,
+				919D6F0C2A12A20F9E7A5478 /* Counter.swift in Sources */,
+				A5E8CD4031F11EB7B40A2937 /* CounterLog.swift in Sources */,
+				61752964122FA3492A1D4FFA /* WatchApp.swift in Sources */,
+				B42F5E14C2DF902F1EF8AE58 /* WatchListView.swift in Sources */,
+				CD313591ED075E54F48F7D98 /* WatchSyncService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		36911C48224339222F4E3418 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FD77B9C6643B5226BAF421F1 /* Tickle */;
+			targetProxy = FB79CDCC9DDB274305D1A835 /* PBXContainerItemProxy */;
+		};
+		397D19DA08EB31D50804EC40 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 055DA8489C6B32DF3A8A5E8D /* TickleWidget */;
+			targetProxy = C53D7DC7681AF4729A530453 /* PBXContainerItemProxy */;
+		};
+		E9D4014910FE4ED43A80C734 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 294CD7D9DC32DFF49DE1DF39 /* TickleWatch */;
+			targetProxy = 7B1C2E2AE428F43C3F01DA94 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		067D940D2AEEDC5D1DE32D37 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "$(inherited) -lsqlite3";
+				PRODUCT_BUNDLE_IDENTIFIER = com.maskedsyntax.tickle.tickleMobile.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tickle.app/Tickle";
+			};
+			name = Release;
+		};
+		0D1CA8793E114975DA3168A9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 5;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MARKETING_VERSION = 1.2.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		384F2252C4866476034CB128 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Tickle/Tickle.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = Tickle/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.2.0;
+				OTHER_LDFLAGS = "$(inherited) -lsqlite3";
+				PRODUCT_BUNDLE_IDENTIFIER = com.maskedsyntax.tickle.tickleMobile;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8501C69D3CE3B21D517A5E7B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 5;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MARKETING_VERSION = 1.2.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		878E1BFAEC5F55E2E8DCC30D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TickleWidget/TickleWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = TickleWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.maskedsyntax.tickle.tickleMobile.TickleWidget;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		937EBF3938AEFFAD210ACAE3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = TickleWatch/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maskedsyntax.tickle.tickleMobile.watchkitapp;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		B577CB9F4CF4F2BFAD3CE84B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "$(inherited) -lsqlite3";
+				PRODUCT_BUNDLE_IDENTIFIER = com.maskedsyntax.tickle.tickleMobile.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tickle.app/Tickle";
+			};
+			name = Debug;
+		};
+		B5D3BD3686157DCB9B967158 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = TickleWatch/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maskedsyntax.tickle.tickleMobile.watchkitapp;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		D5C4C020D2CEA8D5B6BA76F4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TickleWidget/TickleWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = TickleWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.maskedsyntax.tickle.tickleMobile.TickleWidget;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FCFC6EF85D980B3521723859 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Tickle/Tickle.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = Tickle/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.2.0;
+				OTHER_LDFLAGS = "$(inherited) -lsqlite3";
+				PRODUCT_BUNDLE_IDENTIFIER = com.maskedsyntax.tickle.tickleMobile;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		06F5E9DCC7BB8F8B2D2F8BC7 /* Build configuration list for PBXNativeTarget "TickleWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				937EBF3938AEFFAD210ACAE3 /* Debug */,
+				B5D3BD3686157DCB9B967158 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9795939CA2C67FB11EF9FC3D /* Build configuration list for PBXNativeTarget "TickleTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B577CB9F4CF4F2BFAD3CE84B /* Debug */,
+				067D940D2AEEDC5D1DE32D37 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DB5C717BA10196C95C928D08 /* Build configuration list for PBXNativeTarget "TickleWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D5C4C020D2CEA8D5B6BA76F4 /* Debug */,
+				878E1BFAEC5F55E2E8DCC30D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DBE11C6179D318FEEDC61EA7 /* Build configuration list for PBXProject "Tickle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8501C69D3CE3B21D517A5E7B /* Debug */,
+				0D1CA8793E114975DA3168A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F28A46B6D10C7392D037E5C7 /* Build configuration list for PBXNativeTarget "Tickle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FCFC6EF85D980B3521723859 /* Debug */,
+				384F2252C4866476034CB128 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9B9F00789533A059FED608CE /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3FC6EABD35D8B96D14FEF909 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9B9F00789533A059FED608CE /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = DA6F84369CFE251EF65A08BB /* Project object */;
+}

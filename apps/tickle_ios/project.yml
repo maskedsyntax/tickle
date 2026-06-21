@@ -1,0 +1,137 @@
+name: Tickle
+options:
+  bundleIdPrefix: com.maskedsyntax
+settings:
+  base:
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: "1.2.0"
+    CURRENT_PROJECT_VERSION: "5"
+settingGroups:
+  signing:
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+packages:
+  RevenueCat:
+    url: https://github.com/RevenueCat/purchases-ios.git
+    from: 5.0.0
+schemes:
+  Tickle:
+    build:
+      targets:
+        Tickle: all
+        TickleWidget: [run, archive]
+        TickleWatch: [run, archive]
+        TickleTests: [test]
+    test:
+      targets:
+        - TickleTests
+targets:
+  Tickle:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Tickle
+    info:
+      path: Tickle/Info.plist
+      properties:
+        CFBundleDisplayName: "Tickle: Tally & Click Counter"
+        CFBundleName: Tickle
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIBackgroundModes:
+          - remote-notification
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.maskedsyntax.tickle.tickleMobile
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        MARKETING_VERSION: "1.2.0"
+        CURRENT_PROJECT_VERSION: "5"
+        CODE_SIGN_ENTITLEMENTS: Tickle/Tickle.entitlements
+        OTHER_LDFLAGS: "$(inherited) -lsqlite3"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      groups:
+        - signing
+    dependencies:
+      - target: TickleWidget
+        embed: true
+      - target: TickleWatch
+        embed: true
+      - package: RevenueCat
+        product: RevenueCat
+
+  TickleWidget:
+    type: app-extension
+    subtype: widgetkit-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - TickleWidget
+      - Tickle/Models/Counter.swift
+      - Tickle/Models/CounterLog.swift
+      - Tickle/Models/AppConstants.swift
+      - Tickle/Services/ModelContainerFactory.swift
+      - Tickle/Extensions/Color+Hex.swift
+    info:
+      path: TickleWidget/Info.plist
+      properties:
+        CFBundleDisplayName: TickleWidget
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.maskedsyntax.tickle.tickleMobile.TickleWidget
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        CODE_SIGN_ENTITLEMENTS: TickleWidget/TickleWidget.entitlements
+      groups:
+        - signing
+
+  TickleWatch:
+    type: application
+    platform: watchOS
+    deploymentTarget: "10.0"
+    sources:
+      - TickleWatch
+      - Tickle/Models/Counter.swift
+      - Tickle/Models/CounterLog.swift
+      - Tickle/Services/WatchSyncService.swift
+      - Tickle/Extensions/Color+Hex.swift
+    info:
+      path: TickleWatch/Info.plist
+      properties:
+        CFBundleDisplayName: TickleWatch
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: com.maskedsyntax.tickle.tickleMobile
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.maskedsyntax.tickle.tickleMobile.watchkitapp
+        WATCHOS_DEPLOYMENT_TARGET: "10.0"
+        SDKROOT: watchos
+      groups:
+        - signing
+
+  TickleTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - TickleTests
+    dependencies:
+      - target: Tickle
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.maskedsyntax.tickle.tickleMobile.tests
+        OTHER_LDFLAGS: "$(inherited) -lsqlite3"

@@ -287,16 +287,12 @@ Displays:
 
 # 10. Technical Stack
 
-## Mobile
+## iOS
 
-Recommended:
-- Flutter
-
-Reason:
-- fast cross-platform iteration
-- smooth animations
-- future watch support
-- single codebase
+- SwiftUI for native interface and navigation
+- SwiftData for offline persistence and private CloudKit sync
+- WidgetKit and App Intents for interactive Home and Lock Screen widgets
+- WatchConnectivity for the Apple Watch companion
 
 Alternative:
 - React Native
@@ -309,7 +305,7 @@ Recommended:
 - SQLite
 
 Potential abstraction:
-- Drift (Flutter)
+- SwiftData with a one-time legacy SQLite migration
 
 Requirements:
 - fast local reads
