@@ -1,11 +1,13 @@
 import SwiftUI
 import UIKit
+import PhotosUI
 
 struct CounterDraft {
     var title = ""
     var emoji = "💧"
     var colorHex = "#3498DB"
     var goal = ""
+    var imageData: Data? = nil
 }
 
 struct CounterEditorSheet: View {
@@ -13,6 +15,8 @@ struct CounterEditorSheet: View {
     @State var draft: CounterDraft
     let title: String
     let onSave: (CounterDraft) throws -> Void
+
+    @State private var selectedPhotoItem: PhotosPickerItem? = nil
 
     private let colors = ["#3498DB", "#E74C3C", "#2ECC71", "#F1C40F", "#9B59B6", "#E67E22"]
     private let quickEmojis = ["💧", "💪", "✨", "📚", "☕️", "💊", "❤️", "⭐️"]
@@ -96,6 +100,56 @@ struct CounterEditorSheet: View {
                             .buttonStyle(.plain)
                         }
                     }
+                }
+                
+                Section("Background Image") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        if let imageData = draft.imageData, let uiImage = UIImage(data: imageData) {
+                            HStack(spacing: 12) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 60, height: 60)
+                                    .cornerRadius(8)
+                                    .clipped()
+                                
+                                Button(role: .destructive) {
+                                    draft.imageData = nil
+                                    selectedPhotoItem = nil
+                                } label: {
+                                    Text("Remove Photo")
+                                        .font(.subheadline)
+                                        .foregroundColor(.red)
+                                }
+                            }
+                        }
+                        
+                        PhotosPicker(
+                            selection: $selectedPhotoItem,
+                            matching: .images,
+                            photoLibrary: .shared()
+                        ) {
+                            Label(
+                                draft.imageData == nil ? "Choose Photo..." : "Change Photo...",
+                                systemImage: "photo"
+                            )
+                            .font(.subheadline)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+            .onChange(of: selectedPhotoItem) { _, newValue in
+                Task {
+                    if let data = try? await newValue?.loadTransferable(type: Data.self) {
+                        draft.imageData = data
+                    }
+                }
+            }
+            .onChange(of: draft.goal) { _, newValue in
+                let filtered = newValue.filter { $0.isNumber }
+                if filtered != newValue {
+                    draft.goal = filtered
                 }
             }
             .navigationTitle(title)

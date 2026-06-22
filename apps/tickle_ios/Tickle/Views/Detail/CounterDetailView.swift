@@ -14,6 +14,7 @@ struct CounterDetailView: View {
     @State private var showingReminder = false
     @State private var reminderDate = Date()
     @State private var errorMessage: String?
+    @State private var showingPaywall = false
 
     private var logs: [CounterLog] { (counter.logs ?? []).sorted { $0.timestamp > $1.timestamp } }
     private var positiveDays: [Date: Int] {
@@ -61,7 +62,7 @@ struct CounterDetailView: View {
                     Button { showingEdit = true } label: { Label("Edit Counter", systemImage: "pencil") }
                     Button {
                         if purchases.isPro { showingReminder = true }
-                        else { errorMessage = "Daily reminders are included with Tickle Pro." }
+                        else { showingPaywall = true }
                     } label: { Label("Daily Reminder", systemImage: "bell") }
                     Button { showingReset = true } label: { Label("Reset Count", systemImage: "arrow.counterclockwise") }
                     Button(role: .destructive) { showingClear = true } label: { Label("Clear History", systemImage: "trash") }
@@ -70,12 +71,15 @@ struct CounterDetailView: View {
         }
         .sheet(isPresented: $showingEdit) {
             CounterEditorSheet(draft: CounterDraft(title: counter.title, emoji: counter.emoji ?? "number",
-                                                    colorHex: counter.colorHex, goal: counter.goalValue.map(String.init) ?? ""),
+                                                    colorHex: counter.colorHex, goal: counter.goalValue.map(String.init) ?? "", imageData: counter.imageData),
                                title: "Edit Counter") { draft in
-                try store.update(counter, title: draft.title, emoji: draft.emoji, colorHex: draft.colorHex, goal: Int(draft.goal))
+                try store.update(counter, title: draft.title, emoji: draft.emoji, colorHex: draft.colorHex, goal: Int(draft.goal), imageData: draft.imageData)
             }
         }
         .sheet(isPresented: $showingReminder) { reminderSheet }
+        .sheet(isPresented: $showingPaywall) {
+            PaywallView(isPresented: $showingPaywall)
+        }
         .confirmationDialog("Reset count to zero?", isPresented: $showingReset, titleVisibility: .visible) {
             Button("Reset", role: .destructive) { perform { try store.reset(counter) } }
         }
@@ -119,8 +123,18 @@ struct CounterDetailView: View {
                 } else { Text("Tap to count").font(.subheadline) }
             }
             .foregroundStyle(.white).frame(maxWidth: .infinity).padding(24)
-            .background(LinearGradient(colors: [Color(hex: counter.colorHex), Color(hex: counter.colorHex).opacity(0.72)],
-                                       startPoint: .topLeading, endPoint: .bottomTrailing), in: RoundedRectangle(cornerRadius: 28))
+            .background {
+                if let imageData = counter.imageData, let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .overlay(Color.black.opacity(0.4))
+                } else {
+                    LinearGradient(colors: [Color(hex: counter.colorHex), Color(hex: counter.colorHex).opacity(0.72)],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing)
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 28))
         }.buttonStyle(.plain).accessibilityLabel("\(counter.title), count \(counter.currentCount)")
             .accessibilityHint("Double tap to increment")
     }

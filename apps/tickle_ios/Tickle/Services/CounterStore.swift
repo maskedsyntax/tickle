@@ -15,7 +15,7 @@ final class CounterStore: ObservableObject {
     }
 
     @discardableResult
-    func create(title: String, emoji: String?, colorHex: String, goal: Int?) throws -> Counter {
+    func create(title: String, emoji: String?, colorHex: String, goal: Int?, imageData: Data? = nil) throws -> Counter {
         let descriptor = FetchDescriptor<Counter>()
         let order = (try context.fetch(descriptor).map(\.sortOrder).max() ?? -1) + 1
         let counter = Counter(
@@ -23,7 +23,8 @@ final class CounterStore: ObservableObject {
             emoji: emoji,
             colorHex: colorHex,
             goalValue: goal.flatMap { $0 > 0 ? $0 : nil },
-            sortOrder: order
+            sortOrder: order,
+            imageData: imageData
         )
         context.insert(counter)
         try saveAndReloadWidgets()
@@ -31,11 +32,12 @@ final class CounterStore: ObservableObject {
         return counter
     }
 
-    func update(_ counter: Counter, title: String, emoji: String?, colorHex: String, goal: Int?) throws {
+    func update(_ counter: Counter, title: String, emoji: String?, colorHex: String, goal: Int?, imageData: Data? = nil) throws {
         counter.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
         counter.emoji = emoji
         counter.colorHex = colorHex
         counter.goalValue = goal.flatMap { $0 > 0 ? $0 : nil }
+        counter.imageData = imageData
         try saveAndReloadWidgets()
     }
 
@@ -72,7 +74,8 @@ final class CounterStore: ObservableObject {
             title: "\(counter.title) Copy",
             emoji: counter.emoji,
             colorHex: counter.colorHex,
-            goal: counter.goalValue
+            goal: counter.goalValue,
+            imageData: counter.imageData
         )
     }
 

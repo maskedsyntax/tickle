@@ -28,6 +28,7 @@
 		84E9C9408433F9417311C070 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3132B8C109AEA3670EC7011F /* Color+Hex.swift */; };
 		87B5FA893FFC38CE85E0FFD6 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0688F6CD2EE21221A3F873A5 /* AppConstants.swift */; };
 		8D88600189481F7F6D0BFEE2 /* PurchaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 481507E8AA6BB17B6D312CF9 /* PurchaseService.swift */; };
+		900242F898EB7852E8658475 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43105DE57E85244FFA19101 /* PaywallView.swift */; };
 		919D6F0C2A12A20F9E7A5478 /* Counter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286637DE7EE9BAE33BD90569 /* Counter.swift */; };
 		99BAA83D3AE951297DF6D6B7 /* Counter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286637DE7EE9BAE33BD90569 /* Counter.swift */; };
 		9FD095E7BD5586F981A3E66E /* LegacyMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157BFB17760F0F6E26025B22 /* LegacyMigrationTests.swift */; };
@@ -134,6 +135,7 @@
 		AE98CE9516B37319D5640402 /* CounterEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterEditorSheet.swift; sourceTree = "<group>"; };
 		B0499756463B65CB0B7C5F88 /* CounterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterStore.swift; sourceTree = "<group>"; };
 		B254FB1ECCDEBD66E6C9B202 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
+		B43105DE57E85244FFA19101 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		C1F74CCA7514C1A29ACA4912 /* ModelContainerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContainerFactory.swift; sourceTree = "<group>"; };
 		C2EA5F644BED63975D6E7683 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D7283C2D542A594DE6E3F1B1 /* Tickle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tickle.entitlements; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 		1C6DA4152AEB3A2B770699E2 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				B43105DE57E85244FFA19101 /* PaywallView.swift */,
 				4F165F675C88FDE211B15587 /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -485,6 +488,7 @@
 				0B18C5C7F14AF4D80A8C2476 /* ModelContainerFactory.swift in Sources */,
 				46B02ED1D01F3F72C98B89B3 /* NotificationService.swift in Sources */,
 				A00A0C2B3BEF6916AEB8A34C /* OnboardingView.swift in Sources */,
+				900242F898EB7852E8658475 /* PaywallView.swift in Sources */,
 				8D88600189481F7F6D0BFEE2 /* PurchaseService.swift in Sources */,
 				DE12090EFBC31FF25C5D6F7D /* RatingService.swift in Sources */,
 				02C6D4932F532309F7CCE774 /* SettingsStore.swift in Sources */,

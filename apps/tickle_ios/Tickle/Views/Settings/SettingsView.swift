@@ -52,7 +52,7 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
-            .sheet(isPresented: $showingPaywall) { paywall }
+            .sheet(isPresented: $showingPaywall) { PaywallView(isPresented: $showingPaywall) }
             .fileExporter(isPresented: $showingExporter, document: exportDocument,
                           contentType: .json, defaultFilename: "tickle-backup-\(Date.now.formatted(.iso8601.year().month().day()))") { result in
                 if case .failure(let error) = result { message = error.localizedDescription }
@@ -78,7 +78,8 @@ struct SettingsView: View {
     private var proSection: some View {
         Section {
             if purchases.isPro {
-                Label("Tickle Pro Unlocked", systemImage: "sparkles").foregroundStyle(.orange)
+                Label("Tickle Pro Unlocked", systemImage: "sparkles")
+                    .foregroundStyle(.blue)
                 LabeledContent("iCloud Account", value: sync.status.rawValue)
                 if purchases.requiresSyncRestart {
                     Text("Close and reopen Tickle once to activate iCloud sync.")
@@ -87,11 +88,38 @@ struct SettingsView: View {
                 Button("Refresh Purchase & Sync Status") { Task { await purchases.refresh(); await sync.refresh() } }
             } else {
                 Button { showingPaywall = true } label: {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Label("Unlock Tickle Pro", systemImage: "sparkles").font(.headline)
-                        Text("All counters in widgets, iCloud sync, reminders, and more. One purchase.")
-                            .font(.caption).foregroundStyle(.secondary)
-                    }.padding(.vertical, 6)
+                    HStack(spacing: 14) {
+                        ZStack {
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color(red: 0.25, green: 0.5, blue: 1.0), Color(red: 0.35, green: 0.35, blue: 0.95)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 42, height: 42)
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("Unlock Tickle Pro")
+                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .foregroundStyle(.primary)
+                            Text("Widgets · iCloud Sync · Reminders · Watch")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(.vertical, 6)
                 }
             }
         }
@@ -112,32 +140,6 @@ struct SettingsView: View {
         }
     }
 
-    private var paywall: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                Image(systemName: "sparkles").font(.system(size: 64)).foregroundStyle(.orange).padding(.top, 32)
-                Text("Tickle Pro").font(.largeTitle.bold())
-                Text("One purchase. Yours forever.").foregroundStyle(.secondary)
-                VStack(alignment: .leading, spacing: 14) {
-                    Label("Choose any counter in widgets", systemImage: "rectangle.grid.1x2")
-                    Label("Private iCloud synchronization", systemImage: "icloud")
-                    Label("Daily counter reminders", systemImage: "bell")
-                    Label("Apple Watch companion", systemImage: "applewatch")
-                }.frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 34)
-                Spacer()
-                Button { Task { await purchases.purchase(); if purchases.isPro { showingPaywall = false } } } label: {
-                    Text(purchases.isLoading ? "Please Wait…" : "Unlock for \(purchases.price)")
-                        .frame(maxWidth: .infinity).padding().font(.headline)
-                }.buttonStyle(.borderedProminent).disabled(purchases.isLoading).padding(.horizontal)
-                Button("Restore Purchases") { Task { await purchases.restore(); if purchases.isPro { showingPaywall = false } } }
-                    .disabled(purchases.isLoading)
-                Button("Not Now") { showingPaywall = false }.foregroundStyle(.secondary).padding(.bottom)
-            }
-            .alert("Purchase Error", isPresented: Binding(get: { purchases.errorMessage != nil }, set: { if !$0 { purchases.errorMessage = nil } })) {
-                Button("OK") { purchases.errorMessage = nil }
-            } message: { Text(purchases.errorMessage ?? "") }
-        }
-    }
 
     private var version: String {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"

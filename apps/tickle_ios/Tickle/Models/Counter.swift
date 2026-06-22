@@ -15,6 +15,9 @@ final class Counter {
     var reminderHour: Int?
     var reminderMinute: Int?
     
+    @Attribute(.externalStorage)
+    var imageData: Data?
+    
     @Relationship(deleteRule: .cascade, inverse: \CounterLog.counter)
     var logs: [CounterLog]?
     
@@ -28,7 +31,8 @@ final class Counter {
          createdAt: Date = Date(),
          sortOrder: Int = 0,
          reminderHour: Int? = nil,
-         reminderMinute: Int? = nil) {
+         reminderMinute: Int? = nil,
+         imageData: Data? = nil) {
         self.id = id
         self.title = title
         self.emoji = emoji
@@ -40,6 +44,7 @@ final class Counter {
         self.sortOrder = sortOrder
         self.reminderHour = reminderHour
         self.reminderMinute = reminderMinute
+        self.imageData = imageData
         self.logs = []
     }
 }
