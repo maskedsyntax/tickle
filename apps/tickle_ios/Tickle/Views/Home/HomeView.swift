@@ -188,6 +188,23 @@ struct HomeView: View {
                 .padding(14)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
                 
+                // Progress Bar at the bottom of the card
+                if let goal = counter.goalValue, goal > 0 {
+                    VStack {
+                        Spacer()
+                        GeometryReader { geo in
+                            let progress = min(Double(counter.currentCount) / Double(goal), 1.0)
+                            ZStack(alignment: .leading) {
+                                Color.white.opacity(0.18)
+                                Color.white
+                                    .frame(width: geo.size.width * CGFloat(progress))
+                            }
+                        }
+                        .frame(height: 5)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                
                 // Edit/Delete overlays when editing
                 if isEditing {
                     HStack(spacing: 0) {
@@ -264,15 +281,19 @@ struct HomeView: View {
     }
 
     private func subtitleLabel(for counter: Counter) -> String {
+        var status = ""
+        if let goal = counter.goalValue, goal > 0 {
+            status = "Goal: \(goal) · "
+        }
         if let lastLog = counter.logs?.sorted(by: { $0.timestamp > $1.timestamp }).first {
             let formatter = RelativeDateTimeFormatter()
             formatter.unitsStyle = .full
             let timeStr = formatter.localizedString(for: lastLog.timestamp, relativeTo: Date())
-            return "Last tap: \(timeStr)"
+            return "\(status)Last tap: \(timeStr)"
         } else {
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
-            return "Started on \(formatter.string(from: counter.createdAt))"
+            return "\(status)Started on \(formatter.string(from: counter.createdAt))"
         }
     }
 
