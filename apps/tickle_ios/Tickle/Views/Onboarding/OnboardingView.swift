@@ -153,6 +153,7 @@ struct OnboardingView: View {
     
     private func completeOnboarding() {
         SoundService.shared.playPop()
+        AnalyticsService.shared.trackEvent(name: "Onboarding Completed")
         
         for template in templates {
             if selectedTemplates.contains(template.id) {

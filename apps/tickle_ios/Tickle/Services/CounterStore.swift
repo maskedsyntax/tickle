@@ -29,6 +29,7 @@ final class CounterStore: ObservableObject {
         context.insert(counter)
         try saveAndReloadWidgets()
         NotificationService.shared.resetReengagementNotification()
+        AnalyticsService.shared.trackEvent(name: "Counter Created", parameters: ["title": title, "emoji": emoji ?? ""])
         return counter
     }
 
@@ -52,9 +53,20 @@ final class CounterStore: ObservableObject {
             counter: counter
         )
         context.insert(log)
-        try saveAndReloadWidgets()
+        
+        // Defer expensive writes and widget updates to prevent UI blocking
+        saveAndReloadWidgetsDeferred()
+        
         NotificationService.shared.resetReengagementNotification()
-        if delta > 0 { RatingService.shared.trackSignificantAction() }
+        
+        if action == "reset" {
+            SoundService.shared.playPop()
+        } else if delta > 0 {
+            SoundService.shared.playClick()
+            RatingService.shared.trackSignificantAction()
+        } else if delta < 0 {
+            SoundService.shared.playThud()
+        }
     }
 
     func reset(_ counter: Counter) throws {
@@ -108,5 +120,39 @@ final class CounterStore: ObservableObject {
         try context.save()
         WidgetCenter.shared.reloadAllTimelines()
         WatchSyncService.shared.publishSnapshot()
+    }
+
+    private var pendingSaveTask: Task<Void, Never>?
+
+    func saveAndReloadWidgetsDeferred() {
+        pendingSaveTask?.cancel()
+        pendingSaveTask = Task {
+            do {
+                try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds debounce
+                guard !Task.isCancelled else { return }
+                try context.save()
+                WidgetCenter.shared.reloadAllTimelines()
+                WatchSyncService.shared.publishSnapshot()
+                pendingSaveTask = nil
+            } catch {
+                if !(error is CancellationError) {
+                    print("Failed to save and reload widgets: \(error)")
+                }
+            }
+        }
+    }
+
+    func flushPendingSave() {
+        if pendingSaveTask != nil {
+            pendingSaveTask?.cancel()
+            pendingSaveTask = nil
+            do {
+                try context.save()
+                WidgetCenter.shared.reloadAllTimelines()
+                WatchSyncService.shared.publishSnapshot()
+            } catch {
+                print("Failed to flush pending save: \(error)")
+            }
+        }
     }
 }

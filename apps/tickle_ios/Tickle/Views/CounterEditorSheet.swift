@@ -2,7 +2,8 @@ import SwiftUI
 import UIKit
 import PhotosUI
 
-struct CounterDraft {
+struct CounterDraft: Identifiable {
+    let id = UUID()
     var title = ""
     var emoji = "💧"
     var colorHex = "#3498DB"

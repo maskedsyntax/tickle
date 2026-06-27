@@ -3,18 +3,21 @@ options:
   bundleIdPrefix: com.maskedsyntax
 settings:
   base:
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: "GVGJLY2H53"
     CODE_SIGN_STYLE: Automatic
     MARKETING_VERSION: "1.2.0"
     CURRENT_PROJECT_VERSION: "5"
 settingGroups:
   signing:
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: "GVGJLY2H53"
     CODE_SIGN_STYLE: Automatic
 packages:
   RevenueCat:
     url: https://github.com/RevenueCat/purchases-ios.git
     from: 5.0.0
+  Sentry:
+    url: https://github.com/getsentry/sentry-cocoa.git
+    from: 8.0.0
 schemes:
   Tickle:
     build:
@@ -50,6 +53,10 @@ targets:
           - UIInterfaceOrientationLandscapeRight
         UIBackgroundModes:
           - remote-notification
+        CFBundleURLTypes:
+          - CFBundleURLName: com.maskedsyntax.tickle
+            CFBundleURLSchemes:
+              - tickle
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.maskedsyntax.tickle.tickleMobile
@@ -68,6 +75,8 @@ targets:
         embed: true
       - package: RevenueCat
         product: RevenueCat
+      - package: Sentry
+        product: Sentry
 
   TickleWidget:
     type: app-extension
@@ -134,4 +143,5 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.maskedsyntax.tickle.tickleMobile.tests
+        GENERATE_INFOPLIST_FILE: YES
         OTHER_LDFLAGS: "$(inherited) -lsqlite3"

@@ -6,6 +6,7 @@ struct CounterDetailView: View {
     @EnvironmentObject private var store: CounterStore
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var purchases: PurchaseService
+    @Environment(\.dismiss) private var dismiss
     @Bindable var counter: Counter
     @State private var rangeDays = 7
     @State private var showingEdit = false
@@ -64,6 +65,15 @@ struct CounterDetailView: View {
                         if purchases.isPro { showingReminder = true }
                         else { showingPaywall = true }
                     } label: { Label("Daily Reminder", systemImage: "bell") }
+                    Button {
+                        perform { try store.duplicate(counter) }
+                    } label: { Label("Duplicate Counter", systemImage: "plus.square.on.square") }
+                    Button {
+                        perform {
+                            try store.setArchived(counter, true)
+                            dismiss()
+                        }
+                    } label: { Label("Archive Counter", systemImage: "archivebox") }
                     Button { showingReset = true } label: { Label("Reset Count", systemImage: "arrow.counterclockwise") }
                     Button(role: .destructive) { showingClear = true } label: { Label("Clear History", systemImage: "trash") }
                 } label: { Image(systemName: "ellipsis.circle") }
@@ -265,14 +275,37 @@ private struct RapidCountButton: View {
     @State private var timer: Timer?
 
     var body: some View {
-        Image(systemName: systemName).font(.title.bold()).foregroundStyle(.white).frame(maxWidth: .infinity).frame(height: 58)
+        Image(systemName: systemName)
+            .font(.title.bold())
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: 58)
             .background(tint, in: RoundedRectangle(cornerRadius: 18))
             .contentShape(Rectangle())
-            .gesture(DragGesture(minimumDistance: 0).onChanged { _ in
-                guard timer == nil else { return }
-                action()
-                timer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { _ in action() }
-            }.onEnded { _ in timer?.invalidate(); timer = nil })
-            .onDisappear { timer?.invalidate(); timer = nil }
+            .onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity) {
+                // No-op (triggered only when infinity duration is reached)
+            } onPressingChanged: { isPressing in
+                if isPressing {
+                    // Touch down: trigger tap action instantly
+                    action()
+                    
+                    // Start delay timer; if held down for 0.4s, start rapid repeating
+                    timer?.invalidate()
+                    timer = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false) { _ in
+                        timer?.invalidate()
+                        timer = Timer.scheduledTimer(withTimeInterval: 0.12, repeats: true) { _ in
+                            action()
+                        }
+                    }
+                } else {
+                    // Touch up / gesture cancelled: stop timer instantly
+                    timer?.invalidate()
+                    timer = nil
+                }
+            }
+            .onDisappear {
+                timer?.invalidate()
+                timer = nil
+            }
     }
 }

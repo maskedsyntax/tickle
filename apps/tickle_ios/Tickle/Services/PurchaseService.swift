@@ -35,6 +35,9 @@ final class PurchaseService: NSObject, ObservableObject, PurchasesDelegate {
         do {
             let result = try await Purchases.shared.purchase(package: lifetimePackage)
             apply(result.customerInfo)
+            if result.customerInfo.entitlements[AppConstants.proEntitlementID]?.isActive == true {
+                AnalyticsService.shared.trackEvent(name: "Pro Purchase")
+            }
         } catch ErrorCode.purchaseCancelledError { return }
         catch { errorMessage = error.localizedDescription }
     }

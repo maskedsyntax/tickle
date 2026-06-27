@@ -287,7 +287,7 @@ struct HomeView: View {
         }
         if let lastLog = counter.logs?.sorted(by: { $0.timestamp > $1.timestamp }).first {
             let formatter = RelativeDateTimeFormatter()
-            formatter.unitsStyle = .full
+            formatter.unitsStyle = .short
             let timeStr = formatter.localizedString(for: lastLog.timestamp, relativeTo: Date())
             return "\(status)Last tap: \(timeStr)"
         } else {

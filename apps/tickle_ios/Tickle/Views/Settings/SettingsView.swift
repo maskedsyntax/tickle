@@ -109,8 +109,10 @@ struct SettingsView: View {
                                 .font(.system(size: 16, weight: .bold, design: .rounded))
                                 .foregroundStyle(.primary)
                             Text("Widgets · iCloud Sync · Reminders · Watch")
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
                                 .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                         }
 
                         Spacer()

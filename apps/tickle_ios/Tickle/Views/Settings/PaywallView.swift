@@ -104,7 +104,7 @@ struct PaywallView: View {
                             .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundStyle(.secondary)
                     }
-                    Text("Less than a coffee ☕")
+                    Text("One-Time Purchase · Less than a cup of coffee ☕")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundStyle(.tertiary)
                 }

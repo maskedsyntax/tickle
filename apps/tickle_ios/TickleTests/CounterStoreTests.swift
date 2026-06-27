@@ -21,7 +21,8 @@ final class CounterStoreTests: XCTestCase {
 
         try store.reset(counter)
         XCTAssertEqual(counter.currentCount, 0)
-        XCTAssertEqual(counter.logs?.last?.actionTypeName, "reset")
+        let sortedLogs = counter.logs?.sorted(by: { $0.timestamp < $1.timestamp })
+        XCTAssertEqual(sortedLogs?.last?.actionTypeName, "reset")
         try store.clearHistory(counter)
         XCTAssertTrue(counter.logs?.isEmpty == true)
     }

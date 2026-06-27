@@ -12,6 +12,7 @@
 		0B18C5C7F14AF4D80A8C2476 /* ModelContainerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F74CCA7514C1A29ACA4912 /* ModelContainerFactory.swift */; };
 		170DEA467F25D6EBF5C5D96B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A4654D7E8A9C407746C25F7 /* Assets.xcassets */; };
 		1CBCB43EA9A256F6AC2B34EA /* ModelContainerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F74CCA7514C1A29ACA4912 /* ModelContainerFactory.swift */; };
+		1DB19110166CC23616C4F828 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 7A98CA0836BEB0EB6C5CEDEF /* Sentry */; };
 		2027CC4731325C403292155E /* WatchSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11B6078CC86C5F8E730B449 /* WatchSyncService.swift */; };
 		2F51452B207D315709349395 /* TickleWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6FBD57CA7205EB754715AACF /* TickleWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3B6076BEF6DEABA0754DE156 /* CounterDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5656FC25BA96A59B6059A6EC /* CounterDetailView.swift */; };
@@ -43,9 +44,11 @@
 		C82987B1748E91D80E08C23E /* TickleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA50F309B892528AD05032C /* TickleApp.swift */; };
 		CD313591ED075E54F48F7D98 /* WatchSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11B6078CC86C5F8E730B449 /* WatchSyncService.swift */; };
 		CD633D71D552716321B6F21C /* SyncStatusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB11AC766F2FCCBC71EF256 /* SyncStatusService.swift */; };
+		D1E146DCDC696891D47FEFBB /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 440A2AE021D3065FAF1DD6EE /* AnalyticsService.swift */; };
 		D91EB934813FD169D699C26E /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3132B8C109AEA3670EC7011F /* Color+Hex.swift */; };
 		DE12090EFBC31FF25C5D6F7D /* RatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46C17A9C21C3D1B29AEB329E /* RatingService.swift */; };
 		E6292C2AD5B5C06C8C338EB0 /* TickleWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A9D0759B52F8BB87BD077AAC /* TickleWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E956D5BECE81C856DBD00C05 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 27B1B07F59750179C071B03F /* Localizable.xcstrings */; };
 		E9C975B46987CA157D195615 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01775C54C46F88D1B956E380 /* HomeView.swift */; };
 		EC61F4D110A0E51029DDEBE4 /* TickleWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25221A1D80A3AF49156B65CC /* TickleWidget.swift */; };
 		F0B8AFC9ED079B2DA196FA79 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 3FC6EABD35D8B96D14FEF909 /* RevenueCat */; };
@@ -111,6 +114,7 @@
 		1B99F547EE0D630B769794D5 /* IncrementIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementIntent.swift; sourceTree = "<group>"; };
 		1EEF81DCA9ACFA0A4B60DA59 /* Tickle.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Tickle.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		25221A1D80A3AF49156B65CC /* TickleWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TickleWidget.swift; sourceTree = "<group>"; };
+		27B1B07F59750179C071B03F /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		286637DE7EE9BAE33BD90569 /* Counter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Counter.swift; sourceTree = "<group>"; };
 		2AB11AC766F2FCCBC71EF256 /* SyncStatusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatusService.swift; sourceTree = "<group>"; };
 		3132B8C109AEA3670EC7011F /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
@@ -118,6 +122,7 @@
 		3B6FFB135587C785152EA6E4 /* WatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchApp.swift; sourceTree = "<group>"; };
 		3FD68930B0861ADC457DEFAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		43EA59981787A2292CE76D08 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		440A2AE021D3065FAF1DD6EE /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		46C17A9C21C3D1B29AEB329E /* RatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingService.swift; sourceTree = "<group>"; };
 		481507E8AA6BB17B6D312CF9 /* PurchaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseService.swift; sourceTree = "<group>"; };
 		4F165F675C88FDE211B15587 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -152,6 +157,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F0B8AFC9ED079B2DA196FA79 /* RevenueCat in Frameworks */,
+				1DB19110166CC23616C4F828 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,6 +167,7 @@
 		02A091BC5300CC01EDAE58AE /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				440A2AE021D3065FAF1DD6EE /* AnalyticsService.swift */,
 				B0499756463B65CB0B7C5F88 /* CounterStore.swift */,
 				3B40D2D3DF61676CD0E173EA /* LegacyMigrationService.swift */,
 				C1F74CCA7514C1A29ACA4912 /* ModelContainerFactory.swift */,
@@ -296,6 +303,7 @@
 			children = (
 				6CE511DBB9FE0281E357BFA7 /* Assets.xcassets */,
 				A8DC9E03E0C25105C1451554 /* Info.plist */,
+				27B1B07F59750179C071B03F /* Localizable.xcstrings */,
 				43EA59981787A2292CE76D08 /* PrivacyInfo.xcprivacy */,
 				D7283C2D542A594DE6E3F1B1 /* Tickle.entitlements */,
 				A10B0FF8BD94BD79D4BE17D5 /* App */,
@@ -392,6 +400,7 @@
 			name = Tickle;
 			packageProductDependencies = (
 				3FC6EABD35D8B96D14FEF909 /* RevenueCat */,
+				7A98CA0836BEB0EB6C5CEDEF /* Sentry */,
 			);
 			productName = Tickle;
 			productReference = 1EEF81DCA9ACFA0A4B60DA59 /* Tickle.app */;
@@ -407,19 +416,19 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					055DA8489C6B32DF3A8A5E8D = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = GVGJLY2H53;
 						ProvisioningStyle = Automatic;
 					};
 					294CD7D9DC32DFF49DE1DF39 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = GVGJLY2H53;
 						ProvisioningStyle = Automatic;
 					};
 					57E200988084A6654902BF71 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = GVGJLY2H53;
 						ProvisioningStyle = Automatic;
 					};
 					FD77B9C6643B5226BAF421F1 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = GVGJLY2H53;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -430,11 +439,13 @@
 			knownRegions = (
 				Base,
 				en,
+				es,
 			);
 			mainGroup = 545D2DFEA132EE500F905DB5;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				9B9F00789533A059FED608CE /* XCRemoteSwiftPackageReference "purchases-ios" */,
+				A85068B64BA1766D4928837B /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5CEE94EB3D0D83E4890AC9F2 /* Products */;
@@ -455,6 +466,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B913E2C9C80137906266EDD2 /* Assets.xcassets in Resources */,
+				E956D5BECE81C856DBD00C05 /* Localizable.xcstrings in Resources */,
 				B957762A1A3609C660D76D7F /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -474,6 +486,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1E146DCDC696891D47FEFBB /* AnalyticsService.swift in Sources */,
 				746459116C678D72BC3E9ACC /* AppConstants.swift in Sources */,
 				5A1C5DE605DC2220FA2686A8 /* Color+Extensions.swift in Sources */,
 				84E9C9408433F9417311C070 /* Color+Hex.swift in Sources */,
@@ -561,6 +574,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -612,7 +626,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = GVGJLY2H53;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -641,7 +655,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 5;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = GVGJLY2H53;
 				INFOPLIST_FILE = Tickle/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -693,7 +707,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = GVGJLY2H53;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -726,7 +740,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TickleWidget/TickleWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = GVGJLY2H53;
 				INFOPLIST_FILE = TickleWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -745,7 +759,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = GVGJLY2H53;
 				INFOPLIST_FILE = TickleWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.maskedsyntax.tickle.tickleMobile.watchkitapp;
 				SDKROOT = watchos;
@@ -759,6 +773,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -778,7 +793,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = GVGJLY2H53;
 				INFOPLIST_FILE = TickleWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.maskedsyntax.tickle.tickleMobile.watchkitapp;
 				SDKROOT = watchos;
@@ -793,7 +808,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TickleWidget/TickleWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = GVGJLY2H53;
 				INFOPLIST_FILE = TickleWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -815,7 +830,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 5;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = GVGJLY2H53;
 				INFOPLIST_FILE = Tickle/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -889,6 +904,14 @@
 				minimumVersion = 5.0.0;
 			};
 		};
+		A85068B64BA1766D4928837B /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -896,6 +919,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9B9F00789533A059FED608CE /* XCRemoteSwiftPackageReference "purchases-ios" */;
 			productName = RevenueCat;
+		};
+		7A98CA0836BEB0EB6C5CEDEF /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A85068B64BA1766D4928837B /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

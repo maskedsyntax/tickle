@@ -11,6 +11,7 @@ struct TickleApp: App {
     @StateObject private var syncStatus = SyncStatusService()
 
     init() {
+        AnalyticsService.shared.initialize()
         do {
             let container = try ModelContainerFactory.make(
                 cloudSyncEnabled: AppConstants.sharedDefaults.bool(forKey: "is_pro")
