@@ -17,6 +17,7 @@ struct SettingsView: View {
     @State private var showingImporter = false
     @State private var deletingCounter: Counter?
     @State private var message: String?
+    @State private var isRefreshing = false
 
     var body: some View {
         NavigationStack {
@@ -85,7 +86,24 @@ struct SettingsView: View {
                     Text("Close and reopen Tickle once to activate iCloud sync.")
                         .font(.caption).foregroundStyle(.secondary)
                 }
-                Button("Refresh Purchase & Sync Status") { Task { await purchases.refresh(); await sync.refresh() } }
+                Button {
+                    Task {
+                        isRefreshing = true
+                        await purchases.refresh()
+                        await sync.refresh()
+                        isRefreshing = false
+                        message = "Purchase and Sync status refreshed."
+                    }
+                } label: {
+                    HStack {
+                        Text("Refresh Purchase & Sync Status")
+                        if isRefreshing {
+                            Spacer()
+                            ProgressView()
+                        }
+                    }
+                }
+                .disabled(isRefreshing)
             } else {
                 Button { showingPaywall = true } label: {
                     HStack(spacing: 14) {
